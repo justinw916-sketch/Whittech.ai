@@ -22,7 +22,7 @@ export default function Navbar() {
             <nav className={`nav ${scrolled ? 'scrolled' : ''}`}>
                 <div className="nav-inner">
                     <NavLink to="/" className="logo">
-                        <div className="logo-hex"><span>W</span></div>
+                        <img src="/logo.jpg" alt="WhitTech Logo" style={{ height: '55px', width: '55px', borderRadius: '50%', objectFit: 'cover' }} />
                         <span className="logo-text">WHITTECH<span>.AI</span></span>
                     </NavLink>
 

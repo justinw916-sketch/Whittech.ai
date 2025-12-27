@@ -8,7 +8,7 @@ export default function Footer() {
             <div className="footer-grid">
                 <div className="footer-brand">
                     <Link to="/" className="logo">
-                        <div className="logo-hex"><span>W</span></div>
+                        <img src="/logo.jpg" alt="WhitTech Logo" style={{ height: '80px', width: '80px', borderRadius: '50%', objectFit: 'cover' }} />
                         <span className="logo-text">WHITTECH<span>.AI</span></span>
                     </Link>
                     <p>Custom software for construction companies, startups, and small businesses. Fast turnaround. Fair pricing. Built exactly how you need it.</p>

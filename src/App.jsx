@@ -9,9 +9,9 @@ import Enterprise from './pages/Enterprise';
 import Careers from './pages/Careers';
 import DocsLayout from './layouts/DocsLayout';
 import Docs from './pages/Docs';
+import About from './pages/About';
 
 // Placeholder components for now
-const About = () => <div className="container" style={{ paddingTop: '150px' }}><h1>About Us</h1><p>Coming Soon...</p></div>;
 const Services = () => <div className="container" style={{ paddingTop: '150px' }}><h1>Services</h1><p>Coming Soon...</p></div>;
 const Projects = () => <div className="container" style={{ paddingTop: '150px' }}><h1>Projects</h1><p>Coming Soon...</p></div>;
 
