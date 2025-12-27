@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
+import { Canvas } from '@react-three/fiber';
+import StrategicNeuralNet from '../components/3d/StrategicNeuralNet';
+import Magnetic from '../components/Magnetic';
 
 export default function Home() {
     useEffect(() => {
@@ -34,13 +37,22 @@ export default function Home() {
         <>
             {/* Hero Section */}
             <section className="hero">
-                <div className="hero-content">
+                <div className="hero-3d" style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+                    <Canvas camera={{ position: [0, 0, 1] }}>
+                        <StrategicNeuralNet />
+                    </Canvas>
+                </div>
+                <div className="hero-content" style={{ position: 'relative', zIndex: 1 }}>
                     <div className="hero-badge" style={{ opacity: 1, transform: 'translateY(0)' }}>Custom Software, Fast</div>
                     <h1>Your Idea.<br /><span className="gradient">Built in Weeks, Not Months.</span></h1>
                     <p>Custom software for construction companies, startups, and small businesses. We turn your workflow headaches into streamlined applications—flexible, affordable, and built exactly the way you need it.</p>
                     <div className="hero-cta">
-                        <Link to="/contact" className="btn btn-primary">⚡ Get a Free Quote</Link>
-                        <Link to="/projects" className="btn btn-secondary">📁 See Our Work</Link>
+                        <Magnetic>
+                            <Link to="/contact" className="btn btn-primary">⚡ Get a Free Quote</Link>
+                        </Magnetic>
+                        <Magnetic>
+                            <Link to="/projects" className="btn btn-secondary">📁 See Our Work</Link>
+                        </Magnetic>
                     </div>
                 </div>
             </section>

@@ -4,6 +4,11 @@ import Home from './pages/Home';
 import Contact from './pages/Contact';
 import Portal from './pages/Portal';
 import Playground from './pages/Playground';
+import Status from './pages/Status';
+import Enterprise from './pages/Enterprise';
+import Careers from './pages/Careers';
+import DocsLayout from './layouts/DocsLayout';
+import Docs from './pages/Docs';
 
 // Placeholder components for now
 const About = () => <div className="container" style={{ paddingTop: '150px' }}><h1>About Us</h1><p>Coming Soon...</p></div>;
@@ -21,6 +26,14 @@ function App() {
         <Route path="contact" element={<Contact />} />
         <Route path="portal" element={<Portal />} />
         <Route path="playground" element={<Playground />} />
+        <Route path="status" element={<Status />} />
+        <Route path="enterprise" element={<Enterprise />} />
+        <Route path="careers" element={<Careers />} />
+      </Route>
+
+      <Route path="/docs" element={<DocsLayout />}>
+        <Route index element={<Docs />} />
+        <Route path="*" element={<Docs />} />
       </Route>
     </Routes>
   );

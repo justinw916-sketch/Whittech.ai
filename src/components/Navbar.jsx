@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const location = useLocation();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -27,8 +28,9 @@ export default function Navbar() {
 
                     <ul className="nav-links">
                         <li><NavLink to="/" className={({ isActive }) => isActive ? "active" : ""}>Home</NavLink></li>
-                        <li><NavLink to="/about" className={({ isActive }) => isActive ? "active" : ""}>About</NavLink></li>
-                        <li><NavLink to="/services" className={({ isActive }) => isActive ? "active" : ""}>Services</NavLink></li>
+                        <li><Link to="/about" className={location.pathname === '/about' ? 'active' : ''}>About</Link></li>
+                        <li><Link to="/docs" className={location.pathname.startsWith('/docs') ? 'active' : ''}>Docs</Link></li>
+                        <li><Link to="/services" className={location.pathname === '/services' ? 'active' : ''}>Services</Link></li>
                         <li><NavLink to="/projects" className={({ isActive }) => isActive ? "active" : ""}>Projects</NavLink></li>
                         <li><NavLink to="/contact" className={({ isActive }) => isActive ? "active" : ""}>Contact</NavLink></li>
                         <li><NavLink to="/playground" className={({ isActive }) => isActive ? "active" : ""}>Playground</NavLink></li>

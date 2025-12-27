@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import CommandMenu from '../components/CommandMenu';
 import { useEffect } from 'react';
 
 export default function Layout() {
@@ -21,6 +22,7 @@ export default function Layout() {
                 <Outlet />
             </main>
             <Footer />
+            <CommandMenu />
         </>
     );
 }

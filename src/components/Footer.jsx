@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { Hexagon } from 'lucide-react';
+import TypingText from './TypingText';
 
 export default function Footer() {
     return (
@@ -40,7 +42,10 @@ export default function Footer() {
                 </div>
             </div>
             <div className="footer-bottom">
-                <p>© 2025 WhitTech.AI. All rights reserved. *Hosting costs may apply for web applications.</p>
+                <p>&copy; {new Date().getFullYear()} WhitTech.AI. All rights reserved.</p>
+                <div style={{ color: '#00d4ff', fontSize: '12px' }}>
+                    <TypingText text="System Status: OPERATIONAL_v2.0" speed={50} delay={1000} />
+                </div>
                 <div className="social-links">
                     <a href="#" className="social-link" title="GitHub">GH</a>
                     <a href="#" className="social-link" title="LinkedIn">in</a>

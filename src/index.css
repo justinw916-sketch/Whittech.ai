@@ -1259,3 +1259,139 @@ footer {
     padding: 32px 24px;
   }
 }
+
+/* Command Menu (CMDK) */
+.command-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+.command-menu-wrapper {
+  width: 100%;
+  max-width: 640px;
+  background: rgba(13, 18, 25, 0.95);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 0 50px rgba(0, 212, 255, 0.2);
+  overflow: hidden;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.command-search-wrapper {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 12px;
+}
+
+.command-menu [cmdk-input] {
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 16px;
+  color: #fff;
+  outline: none;
+}
+
+.command-menu [cmdk-list] {
+  max-height: 400px;
+  overflow: auto;
+  padding: 8px;
+}
+
+.command-menu [cmdk-group-heading] {
+  font-size: 12px;
+  color: #64748b;
+  padding: 8px 8px 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.command-menu [cmdk-item] {
+  content-visibility: auto;
+  cursor: pointer;
+  height: 48px;
+  border-radius: 8px;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  color: #94a3b8;
+  user-select: none;
+  transition: all 0.2s;
+}
+
+.command-menu [cmdk-item][data-selected="true"] {
+  background: rgba(0, 212, 255, 0.1);
+  color: #00d4ff;
+}
+
+.command-menu [cmdk-empty] {
+  text-align: center;
+  padding: 32px;
+  color: #64748b;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Matrix Mode Override */
+body.matrix-mode {
+  font-family: 'Share Tech Mono', monospace !important;
+  color: #0f0 !important;
+}
+
+body.matrix-mode .bg-glow {
+  background: #0f0 !important;
+}
+
+body.matrix-mode .hero h1 .gradient {
+  background: #0f0 !important;
+  -webkit-text-fill-color: #0f0 !important;
+  text-shadow: 0 0 10px #0f0;
+}
+
+body.matrix-mode .btn-primary {
+  background: #000 !important;
+  border: 1px solid #0f0 !important;
+  color: #0f0 !important;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.4) !important;
+}
+
+body.matrix-mode .nav,
+body.matrix-mode .service-card,
+body.matrix-mode .feature-card,
+body.matrix-mode .who-card,
+body.matrix-mode .command-menu-wrapper,
+body.matrix-mode .command-menu-overlay {
+  border-color: #0f0 !important;
+}
