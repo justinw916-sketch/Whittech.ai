@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact | WhitTech.AI - Get a Free Quote</title>
+  <meta name="description" content="Ready to streamline your business? Contact WhitTech.AI for a free quote on custom software development. Fast response, transparent pricing.">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Exo 2', -apple-system, sans-serif; background: #030508; min-height: 100vh; color: #fff; line-height: 1.6; overflow-x: hidden; }
+    .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: -1; }
+    .bg-glow { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); opacity: 0.15; pointer-events: none; z-index: -1; }
+    .bg-glow-1 { top: -200px; right: -200px; background: #00d4ff; }
+    .bg-glow-2 { bottom: -200px; left: -200px; background: #6366f1; }
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 16px 32px; background: rgba(3, 5, 8, 0.9); border-bottom: 1px solid rgba(0, 212, 255, 0.1); backdrop-filter: blur(20px); transition: all 0.3s; }
+    .nav.scrolled { padding: 12px 32px; background: rgba(3, 5, 8, 0.95); }
+    .nav-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #fff; }
+    .logo-hex { width: 48px; height: 48px; background: linear-gradient(135deg, #0d1219 0%, #131a24 100%); border: 2px solid #00d4ff; display: flex; align-items: center; justify-content: center; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); box-shadow: 0 0 20px rgba(0, 212, 255, 0.3); }
+    .logo-hex span { font-size: 20px; font-weight: 800; color: #00d4ff; }
+    .logo-text { font-size: 24px; font-weight: 700; letter-spacing: 2px; }
+    .logo-text span { color: #00d4ff; }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a { color: #94a3b8; text-decoration: none; font-weight: 500; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; padding: 8px 0; position: relative; transition: color 0.3s; }
+    .nav-links a:hover, .nav-links a.active { color: #00d4ff; }
+    .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: linear-gradient(90deg, #00d4ff, #6366f1); transition: width 0.3s; }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+    .mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 8px; }
+    .mobile-toggle span { width: 28px; height: 3px; background: #00d4ff; border-radius: 2px; transition: all 0.3s; }
+    .mobile-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+    .mobile-toggle.active span:nth-child(2) { opacity: 0; }
+    .mobile-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
+    .mobile-menu { display: none; position: fixed; top: 80px; left: 0; right: 0; background: rgba(3, 5, 8, 0.98); border-bottom: 1px solid rgba(0, 212, 255, 0.1); padding: 24px; transform: translateY(-100%); opacity: 0; transition: all 0.3s; }
+    .mobile-menu.active { transform: translateY(0); opacity: 1; }
+    .mobile-menu a { display: block; padding: 16px 0; color: #94a3b8; text-decoration: none; font-size: 18px; font-weight: 500; border-bottom: 1px solid rgba(0, 212, 255, 0.1); }
+    .mobile-menu a:hover, .mobile-menu a.active { color: #00d4ff; }
+    .page-header { padding: 160px 32px 80px; text-align: center; position: relative; }
+    .page-header::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(0, 212, 255, 0.08) 0%, transparent 60%); pointer-events: none; }
+    .page-header h1 { font-size: clamp(44px, 6vw, 72px); font-weight: 800; margin-bottom: 20px; position: relative; opacity: 0; transform: translateY(30px); animation: fadeUp 0.8s ease forwards; }
+    .page-header h1 .accent { background: linear-gradient(135deg, #00d4ff 0%, #6366f1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .page-header p { color: #94a3b8; font-size: 20px; max-width: 600px; margin: 0 auto; position: relative; opacity: 0; transform: translateY(30px); animation: fadeUp 0.8s ease 0.2s forwards; }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    section { padding: 80px 32px; position: relative; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .section-header { text-align: center; margin-bottom: 48px; }
+    .section-header h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 700; margin-bottom: 12px; }
+    .section-header h2 .accent { color: #00d4ff; }
+    .section-header p { color: #94a3b8; font-size: 17px; }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 64px; align-items: start; }
+    .contact-info h2 { font-size: 32px; margin-bottom: 20px; }
+    .contact-info h2 .accent { color: #00d4ff; }
+    .contact-info > p { color: #94a3b8; font-size: 17px; line-height: 1.8; margin-bottom: 40px; }
+    .contact-methods { display: flex; flex-direction: column; gap: 20px; margin-bottom: 40px; }
+    .contact-method { display: flex; align-items: flex-start; gap: 20px; padding: 24px; background: linear-gradient(135deg, #0d1219 0%, rgba(13, 18, 25, 0.7) 100%); border: 1px solid rgba(0, 212, 255, 0.1); border-radius: 14px; transition: all 0.3s; }
+    .contact-method:hover { border-color: rgba(0, 212, 255, 0.3); transform: translateX(8px); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); }
+    .method-icon { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; background: rgba(0, 212, 255, 0.1); border-radius: 12px; font-size: 26px; flex-shrink: 0; }
+    .method-content h3 { font-size: 18px; margin-bottom: 6px; }
+    .method-content p { color: #94a3b8; font-size: 15px; }
+    .method-content a { color: #00d4ff; text-decoration: none; transition: all 0.3s; }
+    .method-content a:hover { text-decoration: underline; }
+    .response-box { padding: 24px; background: rgba(0, 212, 255, 0.05); border: 1px solid rgba(0, 212, 255, 0.15); border-radius: 14px; }
+    .response-box p { color: #94a3b8; font-size: 15px; line-height: 1.7; }
+    .response-box strong { color: #00d4ff; }
+    .contact-form-wrapper { background: linear-gradient(135deg, #0d1219 0%, rgba(13, 18, 25, 0.7) 100%); border: 1px solid rgba(0, 212, 255, 0.1); border-radius: 24px; padding: 48px; position: relative; overflow: hidden; }
+    .contact-form-wrapper::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #00d4ff, #6366f1, #00d4ff); background-size: 200% 100%; animation: gradientMove 3s linear infinite; }
+    @keyframes gradientMove { 0% { background-position: 0% 0%; } 100% { background-position: 200% 0%; } }
+    .contact-form-wrapper h2 { font-size: 28px; margin-bottom: 8px; }
+    .contact-form-wrapper > p { color: #64748b; font-size: 15px; margin-bottom: 32px; }
+    .form-group { margin-bottom: 24px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; color: #94a3b8; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 16px 20px; background: rgba(10, 14, 20, 0.8); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 10px; color: #fff; font-family: inherit; font-size: 16px; transition: all 0.3s; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #00d4ff; box-shadow: 0 0 25px rgba(0, 212, 255, 0.15); background: rgba(10, 14, 20, 1); }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: #64748b; }
+    .form-group textarea { min-height: 150px; resize: vertical; }
+    .form-group select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300d4ff' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; }
+    .form-group select option { background: #0a0e14; color: #fff; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 18px 32px; border-radius: 10px; font-family: inherit; font-weight: 600; font-size: 16px; text-decoration: none; transition: all 0.3s; cursor: pointer; border: none; }
+    .btn-primary { background: linear-gradient(135deg, #00d4ff 0%, #00a8cc 100%); color: #030508; box-shadow: 0 0 30px rgba(0, 212, 255, 0.4); }
+    .btn-primary:hover { box-shadow: 0 0 50px rgba(0, 212, 255, 0.5); transform: translateY(-2px); }
+    .btn-primary:active { transform: translateY(0); }
+    .form-success { display: none; text-align: center; padding: 48px 24px; }
+    .form-success.show { display: block; }
+    .form-success .icon { font-size: 64px; margin-bottom: 24px; }
+    .form-success h3 { font-size: 28px; margin-bottom: 12px; color: #10b981; }
+    .form-success p { color: #94a3b8; font-size: 16px; }
+    .contact-form.hidden { display: none; }
+    .faq-section { background: rgba(10, 14, 20, 0.5); }
+    .faq-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 1000px; margin: 0 auto; }
+    .faq-item { background: linear-gradient(135deg, #0d1219 0%, rgba(13, 18, 25, 0.7) 100%); border: 1px solid rgba(0, 212, 255, 0.1); border-radius: 16px; padding: 28px; transition: all 0.3s; }
+    .faq-item:hover { border-color: rgba(0, 212, 255, 0.3); transform: translateY(-5px); }
+    .faq-item h3 { font-size: 17px; margin-bottom: 12px; }
+    .faq-item p { color: #94a3b8; font-size: 15px; line-height: 1.7; }
+    footer { background: #030508; border-top: 1px solid rgba(0, 212, 255, 0.1); padding: 64px 32px 32px; }
+    .footer-grid { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+    .footer-brand p { color: #64748b; font-size: 15px; line-height: 1.7; margin-top: 16px; }
+    .footer-links h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px; }
+    .footer-links ul { list-style: none; }
+    .footer-links li { margin-bottom: 12px; }
+    .footer-links a { color: #64748b; text-decoration: none; font-size: 15px; transition: all 0.3s; display: inline-block; }
+    .footer-links a:hover { color: #00d4ff; transform: translateX(5px); }
+    .footer-bottom { max-width: 1400px; margin: 0 auto; padding-top: 32px; border-top: 1px solid rgba(0, 212, 255, 0.1); display: flex; justify-content: space-between; align-items: center; }
+    .footer-bottom p { color: #64748b; font-size: 14px; }
+    .social-links { display: flex; gap: 12px; }
+    .social-link { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: #0d1219; border: 1px solid rgba(0, 212, 255, 0.1); border-radius: 10px; color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 600; transition: all 0.3s; }
+    .social-link:hover { border-color: #00d4ff; color: #00d4ff; transform: translateY(-3px); }
+    @media (max-width: 1024px) { .contact-grid { grid-template-columns: 1fr; } .faq-grid { grid-template-columns: 1fr; } .footer-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 768px) { .nav { padding: 12px 20px; } .nav-links { display: none; } .mobile-toggle { display: flex; } .mobile-menu { display: block; } section { padding: 60px 20px; } .page-header { padding: 120px 20px 60px; } .form-row { grid-template-columns: 1fr; } .footer-grid { grid-template-columns: 1fr; text-align: center; } .footer-bottom { flex-direction: column; gap: 16px; } .contact-form-wrapper { padding: 32px 24px; } }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="logo"><div class="logo-hex"><span>W</span></div><span class="logo-text">WHITTECH<span>.AI</span></span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="contact.html" class="active">Contact</a></li>
+      </ul>
+      <button class="mobile-toggle" id="mobileToggle"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="projects.html">Projects</a>
+    <a href="contact.html" class="active">Contact</a>
+  </div>
+  <header class="page-header">
+    <h1>Let's <span class="accent">Talk</span></h1>
+    <p>Got an idea? A problem? A question? I'm here to help—and I respond fast.</p>
+  </header>
+  <section>
+    <div class="container">
+      <div class="contact-grid">
+        <div class="contact-info">
+          <h2>Start the <span class="accent">Conversation</span></h2>
+          <p>Whether you have a detailed spec or just a rough idea, I want to hear about it. Tell me what's slowing you down, and I'll tell you if I can help—with a realistic timeline and honest pricing. No sales pitch, no pressure.</p>
+          <div class="contact-methods">
+            <div class="contact-method">
+              <div class="method-icon">📧</div>
+              <div class="method-content">
+                <h3>Email</h3>
+                <p><a href="mailto:hello@whittech.ai">hello@whittech.ai</a></p>
+              </div>
+            </div>
+            <div class="contact-method">
+              <div class="method-icon">📍</div>
+              <div class="method-content">
+                <h3>Location</h3>
+                <p>Pollock Pines, California<br>Working remotely with clients nationwide</p>
+              </div>
+            </div>
+            <div class="contact-method">
+              <div class="method-icon">💼</div>
+              <div class="method-content">
+                <h3>LinkedIn</h3>
+                <p><a href="#">Connect professionally</a></p>
+              </div>
+            </div>
+          </div>
+          <div class="response-box">
+            <p><strong>⚡ Quick Response:</strong> I typically respond within 24 hours. For project inquiries, I'll follow up with questions to understand your needs, then provide a detailed proposal within a few days—usually including timeline, cost breakdown, and approach.</p>
+          </div>
+        </div>
+        <div class="contact-form-wrapper">
+          <h2>Send a Message</h2>
+          <p>Fill out the form below and I'll get back to you quickly.</p>
+          <form class="contact-form" id="contactForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">Name *</label>
+                <input type="text" id="name" name="name" placeholder="John Smith" required>
+              </div>
+              <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" placeholder="john@example.com" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="company">Company / Business</label>
+              <input type="text" id="company" name="company" placeholder="Smith Construction (optional)">
+            </div>
+            <div class="form-group">
+              <label for="interest">What are you looking for?</label>
+              <select id="interest" name="interest">
+                <option value="">Select an option...</option>
+                <option value="estimation">Estimation / Bidding Tool</option>
+                <option value="project-management">Project Management App</option>
+                <option value="mobile">Field / Mobile Application</option>
+                <option value="automation">Automation / Integration</option>
+                <option value="ai">AI-Powered Solution</option>
+                <option value="startup">Startup MVP / Prototype</option>
+                <option value="other">Something Else</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="budget">Budget Range</label>
+              <select id="budget" name="budget">
+                <option value="">Select a range (optional)...</option>
+                <option value="under-2k">Under $2,000</option>
+                <option value="2k-5k">$2,000 - $5,000</option>
+                <option value="5k-10k">$5,000 - $10,000</option>
+                <option value="10k-25k">$10,000 - $25,000</option>
+                <option value="over-25k">$25,000+</option>
+                <option value="not-sure">Not sure yet</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="message">Tell me about your project *</label>
+              <textarea id="message" name="message" placeholder="What problem are you trying to solve? What would the ideal solution look like? Any deadlines or constraints I should know about?" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">🚀 Send Message</button>
+          </form>
+          <div class="form-success" id="formSuccess">
+            <div class="icon">✅</div>
+            <h3>Message Sent!</h3>
+            <p>Thanks for reaching out. I'll review your message and get back to you within 24 hours with next steps.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="faq-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Quick <span class="accent">Answers</span></h2>
+        <p>Common questions about working together.</p>
+      </div>
+      <div class="faq-grid">
+        <div class="faq-item"><h3>What does the process look like?</h3><p>We start with a call to understand your needs. Then I'll send a proposal with scope, timeline, and pricing. Once approved, I build in sprints with regular check-ins. You're never left wondering what's happening.</p></div>
+        <div class="faq-item"><h3>How long does a project take?</h3><p>Simple tools: 1-2 weeks. Full applications: 2-4 weeks. Complex platforms: 4-8 weeks. I'll give you a realistic timeline upfront—no bait and switch.</p></div>
+        <div class="faq-item"><h3>What's the typical cost?</h3><p>Quick tools start around $1,500. Full applications typically run $5,000-15,000. Complex projects vary. I quote fixed prices so you know exactly what you're paying before we start.</p></div>
+        <div class="faq-item"><h3>Do I need to know exactly what I want?</h3><p>Not at all. You need to know the problem. I'll help you figure out the solution—that's part of what I do. Half my clients start with "I need something that does X but I'm not sure how."</p></div>
+        <div class="faq-item"><h3>What if I need changes later?</h3><p>Expected! I build modular code that's easy to modify. Post-launch changes are either hourly or quoted as small add-ons, depending on scope. Most changes are quick and affordable.</p></div>
+        <div class="faq-item"><h3>Do you offer ongoing support?</h3><p>All projects include 30-90 days of bug fixes and support (depending on size). Ongoing maintenance packages are available if you need continued help—we can set up a monthly retainer.</p></div>
+      </div>
+    </div>
+  </section>
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand"><a href="index.html" class="logo"><div class="logo-hex"><span>W</span></div><span class="logo-text">WHITTECH<span>.AI</span></span></a><p>Custom software for construction companies, startups, and small businesses. Fast turnaround. Fair pricing. Built exactly how you need it.</p></div>
+      <div class="footer-links"><h4>Navigation</h4><ul><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="services.html">Services</a></li><li><a href="projects.html">Projects</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+      <div class="footer-links"><h4>Services</h4><ul><li><a href="services.html">Estimation Tools</a></li><li><a href="services.html">Project Management</a></li><li><a href="services.html">Mobile Apps</a></li><li><a href="services.html">AI Automation</a></li></ul></div>
+      <div class="footer-links"><h4>Work With Us</h4><ul><li><a href="contact.html">Get a Quote</a></li><li><a href="projects.html">See Examples</a></li><li><a href="about.html">Our Process</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>© 2025 WhitTech.AI. All rights reserved.</p><div class="social-links"><a href="#" class="social-link">GH</a><a href="#" class="social-link">in</a><a href="#" class="social-link">X</a></div></div>
+  </footer>
+  <script>
+    const mobileToggle = document.getElementById('mobileToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileToggle.addEventListener('click', () => { mobileToggle.classList.toggle('active'); mobileMenu.classList.toggle('active'); });
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 50); });
+    // Form submission
+    const contactForm = document.getElementById('contactForm');
+    const formSuccess = document.getElementById('formSuccess');
+    contactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // Simulate form submission
+      const btn = contactForm.querySelector('button[type="submit"]');
+      btn.innerHTML = '⏳ Sending...';
+      btn.disabled = true;
+      setTimeout(() => {
+        contactForm.classList.add('hidden');
+        formSuccess.classList.add('show');
+        // In production, you'd send to Formspree, Netlify Forms, or your backend
+      }, 1500);
+    });
+    // Scroll animations
+    const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.style.opacity = '1'; entry.target.style.transform = 'translateY(0)'; } }); }, { threshold: 0.1 });
+    document.querySelectorAll('.contact-method, .faq-item').forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(30px)'; el.style.transition = 'all 0.6s ease'; observer.observe(el); });
+  </script>
+</body>
+</html>

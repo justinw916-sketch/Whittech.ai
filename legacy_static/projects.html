@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects | WhitTech.AI - Custom Software Portfolio</title>
+  <meta name="description" content="See real examples of custom software built for construction companies, startups, and small businesses. Estimation tools, project management apps, and more.">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Exo 2', -apple-system, sans-serif; background: #030508; min-height: 100vh; color: #fff; line-height: 1.6; overflow-x: hidden; }
+    .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: -1; }
+    .bg-glow { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); opacity: 0.15; pointer-events: none; z-index: -1; }
+    .bg-glow-1 { top: -200px; right: -200px; background: #00d4ff; }
+    .bg-glow-2 { bottom: -200px; left: -200px; background: #6366f1; }
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 16px 32px; background: rgba(3, 5, 8, 0.9); border-bottom: 1px solid rgba(0, 212, 255, 0.1); backdrop-filter: blur(20px); transition: all 0.3s; }
+    .nav.scrolled { padding: 12px 32px; background: rgba(3, 5, 8, 0.95); }
+    .nav-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #fff; }
+    .logo-hex { width: 48px; height: 48px; background: linear-gradient(135deg, #0d1219 0%, #131a24 100%); border: 2px solid #00d4ff; display: flex; align-items: center; justify-content: center; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); box-shadow: 0 0 20px rgba(0, 212, 255, 0.3); }
+    .logo-hex span { font-size: 20px; font-weight: 800; color: #00d4ff; }
+    .logo-text { font-size: 24px; font-weight: 700; letter-spacing: 2px; }
+    .logo-text span { color: #00d4ff; }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a { color: #94a3b8; text-decoration: none; font-weight: 500; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; padding: 8px 0; position: relative; transition: color 0.3s; }
+    .nav-links a:hover, .nav-links a.active { color: #00d4ff; }
+    .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: linear-gradient(90deg, #00d4ff, #6366f1); transition: width 0.3s; }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+    .mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 8px; }
+    .mobile-toggle span { width: 28px; height: 3px; background: #00d4ff; border-radius: 2px; transition: all 0.3s; }
+    .mobile-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+    .mobile-toggle.active span:nth-child(2) { opacity: 0; }
+    .mobile-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
+    .mobile-menu { display: none; position: fixed; top: 80px; left: 0; right: 0; background: rgba(3, 5, 8, 0.98); border-bottom: 1px solid rgba(0, 212, 255, 0.1); padding: 24px; transform: translateY(-100%); opacity: 0; transition: all 0.3s; }
+    .mobile-menu.active { transform: translateY(0); opacity: 1; }
+    .mobile-menu a { display: block; padding: 16px 0; color: #94a3b8; text-decoration: none; font-size: 18px; font-weight: 500; border-bottom: 1px solid rgba(0, 212, 255, 0.1); }
+    .mobile-menu a:hover, .mobile-menu a.active { color: #00d4ff; }
+    .page-header { padding: 160px 32px 80px; text-align: center; position: relative; }
+    .page-header::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(0, 212, 255, 0.08) 0%, transparent 60%); pointer-events: none; }
+    .page-header h1 { font-size: clamp(44px, 6vw, 72px); font-weight: 800; margin-bottom: 20px; position: relative; opacity: 0; transform: translateY(30px); animation: fadeUp 0.8s ease forwards; }
+    .page-header h1 .accent { background: linear-gradient(135deg, #00d4ff 0%, #6366f1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .page-header p { color: #94a3b8; font-size: 20px; max-width: 600px; margin: 0 auto; position: relative; opacity: 0; transform: translateY(30px); animation: fadeUp 0.8s ease 0.2s forwards; }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    section { padding: 80px 32px; position: relative; }
+    .container { max-width: 1400px; margin: 0 auto; }
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-header h2 { font-size: clamp(32px, 4vw, 48px); font-weight: 700; margin-bottom: 16px; }
+    .section-header h2 .accent { color: #00d4ff; }
+    .section-header p { color: #94a3b8; font-size: 18px; max-width: 600px; margin: 0 auto; }
+    .filter-buttons { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 48px; }
+    .filter-btn { font-family: inherit; font-size: 14px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 12px 24px; background: transparent; color: #94a3b8; border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+    .filter-btn:hover { border-color: #00d4ff; color: #00d4ff; }
+    .filter-btn.active { background: linear-gradient(135deg, #00d4ff, #00a8cc); color: #030508; border-color: #00d4ff; box-shadow: 0 0 20px rgba(0, 212, 255, 0.3); }
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 32px; }
+    .project-card { background: linear-gradient(135deg, #0d1219 0%, rgba(13, 18, 25, 0.7) 100%); border: 1px solid rgba(0, 212, 255, 0.1); border-radius: 20px; overflow: hidden; transition: all 0.4s; }
+    .project-card:hover { border-color: rgba(0, 212, 255, 0.3); transform: translateY(-8px); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 212, 255, 0.1); }
+    .project-card.hidden { display: none; }
+    .project-image { height: 220px; background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .project-image::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(3, 5, 8, 0.8) 100%); }
+    .project-image .icon { font-size: 72px; opacity: 0.6; position: relative; z-index: 1; transition: all 0.3s; }
+    .project-card:hover .project-image .icon { transform: scale(1.1); opacity: 0.8; }
+    .project-status { position: absolute; top: 16px; right: 16px; font-family: 'Share Tech Mono', monospace; font-size: 11px; padding: 6px 14px; border-radius: 6px; text-transform: uppercase; letter-spacing: 1px; z-index: 2; }
+    .status-live { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .status-dev { background: rgba(99, 102, 241, 0.2); color: #6366f1; border: 1px solid rgba(99, 102, 241, 0.3); }
+    .status-beta { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .project-content { padding: 32px; }
+    .project-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .tag { font-family: 'Share Tech Mono', monospace; font-size: 11px; padding: 5px 12px; background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 4px; color: #00d4ff; }
+    .project-content h3 { font-size: 24px; margin-bottom: 12px; }
+    .project-content p { color: #94a3b8; font-size: 15px; line-height: 1.7; margin-bottom: 24px; }
+    .project-meta { display: flex; gap: 32px; padding-top: 20px; border-top: 1px solid rgba(0, 212, 255, 0.1); }
+    .meta-item { font-size: 14px; color: #64748b; }
+    .meta-item strong { color: #94a3b8; display: block; margin-bottom: 4px; }
+    .ideas-section { background: rgba(10, 14, 20, 0.5); }
+    .ideas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .idea-card { background: linear-gradient(135deg, #0d1219 0%, rgba(13, 18, 25, 0.7) 100%); border: 1px solid rgba(0, 212, 255, 0.1); border-radius: 16px; padding: 32px; transition: all 0.4s; }
+    .idea-card:hover { border-color: #00d4ff; transform: translateY(-8px); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 212, 255, 0.1); }
+    .idea-icon { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; background: rgba(0, 212, 255, 0.1); border-radius: 14px; margin-bottom: 20px; font-size: 28px; transition: all 0.3s; }
+    .idea-card:hover .idea-icon { transform: scale(1.1); }
+    .idea-card h3 { font-size: 20px; margin-bottom: 12px; }
+    .idea-card p { color: #94a3b8; font-size: 15px; line-height: 1.7; }
+    .cta-box { background: linear-gradient(135deg, #0d1219 0%, rgba(99, 102, 241, 0.15) 100%); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 24px; padding: 64px; text-align: center; position: relative; overflow: hidden; }
+    .cta-box::before { content: ''; position: absolute; top: -150px; left: 50%; transform: translateX(-50%); width: 500px; height: 500px; background: radial-gradient(circle, rgba(0, 212, 255, 0.15) 0%, transparent 60%); pointer-events: none; }
+    .cta-box h2 { font-size: 36px; margin-bottom: 16px; position: relative; }
+    .cta-box h2 .accent { color: #00d4ff; }
+    .cta-box p { color: #94a3b8; font-size: 18px; max-width: 550px; margin: 0 auto 32px; position: relative; }
+    .btn { display: inline-flex; align-items: center; gap: 10px; padding: 18px 40px; border-radius: 10px; font-family: inherit; font-weight: 600; font-size: 16px; text-decoration: none; transition: all 0.3s; cursor: pointer; border: none; }
+    .btn-primary { background: linear-gradient(135deg, #00d4ff 0%, #00a8cc 100%); color: #030508; box-shadow: 0 0 30px rgba(0, 212, 255, 0.4); }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 0 50px rgba(0, 212, 255, 0.5); }
+    footer { background: #030508; border-top: 1px solid rgba(0, 212, 255, 0.1); padding: 64px 32px 32px; }
+    .footer-grid { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+    .footer-brand p { color: #64748b; font-size: 15px; line-height: 1.7; margin-top: 16px; }
+    .footer-links h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px; }
+    .footer-links ul { list-style: none; }
+    .footer-links li { margin-bottom: 12px; }
+    .footer-links a { color: #64748b; text-decoration: none; font-size: 15px; transition: all 0.3s; display: inline-block; }
+    .footer-links a:hover { color: #00d4ff; transform: translateX(5px); }
+    .footer-bottom { max-width: 1400px; margin: 0 auto; padding-top: 32px; border-top: 1px solid rgba(0, 212, 255, 0.1); display: flex; justify-content: space-between; align-items: center; }
+    .footer-bottom p { color: #64748b; font-size: 14px; }
+    .social-links { display: flex; gap: 12px; }
+    .social-link { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: #0d1219; border: 1px solid rgba(0, 212, 255, 0.1); border-radius: 10px; color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 600; transition: all 0.3s; }
+    .social-link:hover { border-color: #00d4ff; color: #00d4ff; transform: translateY(-3px); }
+    @media (max-width: 1024px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 768px) { .nav { padding: 12px 20px; } .nav-links { display: none; } .mobile-toggle { display: flex; } .mobile-menu { display: block; } section { padding: 60px 20px; } .page-header { padding: 120px 20px 60px; } .projects-grid { grid-template-columns: 1fr; } .ideas-grid { grid-template-columns: 1fr; } .footer-grid { grid-template-columns: 1fr; text-align: center; } .footer-bottom { flex-direction: column; gap: 16px; } .cta-box { padding: 40px 24px; } .filter-buttons { gap: 8px; } .filter-btn { padding: 10px 16px; font-size: 12px; } }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="logo"><div class="logo-hex"><span>W</span></div><span class="logo-text">WHITTECH<span>.AI</span></span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="projects.html" class="active">Projects</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <button class="mobile-toggle" id="mobileToggle"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="projects.html" class="active">Projects</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <header class="page-header">
+    <h1>Our <span class="accent">Projects</span></h1>
+    <p>Real solutions for real businesses. Here's what we've built—and what we can build for you.</p>
+  </header>
+  <section>
+    <div class="container">
+      <div class="filter-buttons">
+        <button class="filter-btn active" data-filter="all">All Projects</button>
+        <button class="filter-btn" data-filter="construction">Construction</button>
+        <button class="filter-btn" data-filter="automation">Automation</button>
+        <button class="filter-btn" data-filter="mobile">Mobile</button>
+        <button class="filter-btn" data-filter="ai">AI-Powered</button>
+      </div>
+      <div class="projects-grid">
+        <div class="project-card" data-category="construction">
+          <div class="project-image"><span class="project-status status-live">Live</span><span class="icon">⚡</span></div>
+          <div class="project-content">
+            <div class="project-tags"><span class="tag">Construction</span><span class="tag">Estimation</span><span class="tag">Web App</span></div>
+            <h3>Electrical Bid Calculator</h3>
+            <p>Custom estimation tool for an electrical contractor. Calculates wire runs, panel loads, conduit quantities, and labor hours. Generates professional PDF proposals with company branding and automatic follow-up scheduling.</p>
+            <div class="project-meta"><span class="meta-item"><strong>Timeline</strong>3 weeks</span><span class="meta-item"><strong>Result</strong>75% faster bids</span><span class="meta-item"><strong>ROI</strong>Paid for itself in 2 months</span></div>
+          </div>
+        </div>
+        <div class="project-card" data-category="mobile">
+          <div class="project-image"><span class="project-status status-live">Live</span><span class="icon">📱</span></div>
+          <div class="project-content">
+            <div class="project-tags"><span class="tag">Mobile</span><span class="tag">Field Service</span><span class="tag">PWA</span></div>
+            <h3>Property Inspection App</h3>
+            <p>Mobile-first inspection tool for property managers. Technicians document inspections with photos, complete digital checklists, and reports are auto-generated and delivered to property owners within minutes of completion.</p>
+            <div class="project-meta"><span class="meta-item"><strong>Timeline</strong>4 weeks</span><span class="meta-item"><strong>Result</strong>Same-day reports</span><span class="meta-item"><strong>ROI</strong>Eliminated paper entirely</span></div>
+          </div>
+        </div>
+        <div class="project-card" data-category="automation">
+          <div class="project-image"><span class="project-status status-live">Live</span><span class="icon">📦</span></div>
+          <div class="project-content">
+            <div class="project-tags"><span class="tag">Automation</span><span class="tag">Inventory</span><span class="tag">Integration</span></div>
+            <h3>Inventory Management System</h3>
+            <p>Real-time inventory tracking across multiple warehouse locations. Auto-generates purchase orders at reorder points, syncs bidirectionally with QuickBooks, and provides usage analytics and forecasting dashboards.</p>
+            <div class="project-meta"><span class="meta-item"><strong>Timeline</strong>5 weeks</span><span class="meta-item"><strong>Result</strong>Zero stockouts</span><span class="meta-item"><strong>ROI</strong>$40K saved year one</span></div>
+          </div>
+        </div>
+        <div class="project-card" data-category="construction">
+          <div class="project-image"><span class="project-status status-beta">Beta</span><span class="icon">📅</span></div>
+          <div class="project-content">
+            <div class="project-tags"><span class="tag">Construction</span><span class="tag">Scheduling</span><span class="tag">Web App</span></div>
+            <h3>Crew Scheduling Platform</h3>
+            <p>Drag-and-drop scheduling for a concrete contractor. Dispatchers assign crews to jobs, workers get mobile notifications with directions and job details, and the office sees real-time status updates throughout the day.</p>
+            <div class="project-meta"><span class="meta-item"><strong>Timeline</strong>4 weeks</span><span class="meta-item"><strong>Result</strong>50% fewer calls</span><span class="meta-item"><strong>ROI</strong>8 hours saved/week</span></div>
+          </div>
+        </div>
+        <div class="project-card" data-category="ai">
+          <div class="project-image"><span class="project-status status-dev">In Dev</span><span class="icon">🤖</span></div>
+          <div class="project-content">
+            <div class="project-tags"><span class="tag">AI</span><span class="tag">Documents</span><span class="tag">Automation</span></div>
+            <h3>Bid Document Analyzer</h3>
+            <p>AI-powered tool that reads RFPs and bid documents, extracts key requirements, identifies scope items, flags potential issues, and generates a structured takeoff checklist. Saves hours of manual document review.</p>
+            <div class="project-meta"><span class="meta-item"><strong>Timeline</strong>6 weeks</span><span class="meta-item"><strong>Status</strong>In development</span><span class="meta-item"><strong>Tech</strong>Claude AI + OCR</span></div>
+          </div>
+        </div>
+        <div class="project-card" data-category="automation">
+          <div class="project-image"><span class="project-status status-live">Live</span><span class="icon">📊</span></div>
+          <div class="project-content">
+            <div class="project-tags"><span class="tag">Automation</span><span class="tag">Reporting</span><span class="tag">Dashboard</span></div>
+            <h3>Project Profitability Dashboard</h3>
+            <p>Real-time dashboard that pulls data from QuickBooks, timesheets, and job costing spreadsheets. Shows actual vs. estimated costs, profit margins by job, and automatically flags projects going over budget.</p>
+            <div class="project-meta"><span class="meta-item"><strong>Timeline</strong>3 weeks</span><span class="meta-item"><strong>Result</strong>Caught $40K leak</span><span class="meta-item"><strong>ROI</strong>Immediate visibility</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="ideas-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>What We <span class="accent">Could Build</span> For You</h2>
+        <p>Some ideas to spark the conversation. Or bring your own—we love those even more.</p>
+      </div>
+      <div class="ideas-grid">
+        <div class="idea-card"><div class="idea-icon">🧮</div><h3>Custom Calculators</h3><p>Material takeoffs, labor estimators, markup calculators, ROI tools—whatever math you do repeatedly, we can automate it and make it bulletproof.</p></div>
+        <div class="idea-card"><div class="idea-icon">📝</div><h3>Digital Forms & Checklists</h3><p>Replace paper forms with mobile-friendly digital versions. Auto-route for approval, generate reports, sync to your systems, never lose data again.</p></div>
+        <div class="idea-card"><div class="idea-icon">🔔</div><h3>Alert & Notification Systems</h3><p>Get notified when inventory is low, when a job goes over budget, when a deadline approaches. Custom triggers, custom actions, your rules.</p></div>
+        <div class="idea-card"><div class="idea-icon">📈</div><h3>Custom Dashboards</h3><p>See your business at a glance. Pull data from multiple sources into one view. Track KPIs that actually matter to you, updated in real-time.</p></div>
+        <div class="idea-card"><div class="idea-icon">🔄</div><h3>Workflow Automation</h3><p>When X happens, do Y automatically. Proposal approved → create project. Job complete → send invoice. Payment received → update books. You define the rules.</p></div>
+        <div class="idea-card"><div class="idea-icon">🌐</div><h3>Customer Portals</h3><p>Let clients check project status, approve changes, view documents, sign contracts, and pay invoices—without calling your office.</p></div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="container">
+      <div class="cta-box">
+        <h2>What Would <span class="accent">You</span> Build?</h2>
+        <p>Every business has that one thing—the process that takes too long, the spreadsheet that's a nightmare, the tool that doesn't exist. Tell me about yours.</p>
+        <a href="contact.html" class="btn btn-primary">🚀 Start a Conversation</a>
+      </div>
+    </div>
+  </section>
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand"><a href="index.html" class="logo"><div class="logo-hex"><span>W</span></div><span class="logo-text">WHITTECH<span>.AI</span></span></a><p>Custom software for construction companies, startups, and small businesses. Fast turnaround. Fair pricing. Built exactly how you need it.</p></div>
+      <div class="footer-links"><h4>Navigation</h4><ul><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="services.html">Services</a></li><li><a href="projects.html">Projects</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+      <div class="footer-links"><h4>Services</h4><ul><li><a href="services.html">Estimation Tools</a></li><li><a href="services.html">Project Management</a></li><li><a href="services.html">Mobile Apps</a></li><li><a href="services.html">AI Automation</a></li></ul></div>
+      <div class="footer-links"><h4>Work With Us</h4><ul><li><a href="contact.html">Get a Quote</a></li><li><a href="projects.html">See Examples</a></li><li><a href="about.html">Our Process</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>© 2025 WhitTech.AI. All rights reserved.</p><div class="social-links"><a href="#" class="social-link">GH</a><a href="#" class="social-link">in</a><a href="#" class="social-link">X</a></div></div>
+  </footer>
+  <script>
+    const mobileToggle = document.getElementById('mobileToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileToggle.addEventListener('click', () => { mobileToggle.classList.toggle('active'); mobileMenu.classList.toggle('active'); });
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 50); });
+    // Filter functionality
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const projectCards = document.querySelectorAll('.project-card');
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        projectCards.forEach(card => {
+          if (filter === 'all' || card.dataset.category === filter) {
+            card.classList.remove('hidden');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; }, 50);
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+      });
+    });
+    // Scroll animations
+    const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.style.opacity = '1'; entry.target.style.transform = 'translateY(0)'; } }); }, { threshold: 0.1 });
+    document.querySelectorAll('.project-card, .idea-card').forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(30px)'; el.style.transition = 'all 0.6s ease'; observer.observe(el); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhitTech.AI | Custom Software for Construction & Small Business</title>
+  <meta name="description" content="Custom software solutions built fast for construction companies, startups, and small businesses. 2-4 week delivery, transparent pricing.">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap');
+    
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    
+    body {
+      font-family: 'Exo 2', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #030508;
+      min-height: 100vh;
+      color: #ffffff;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .bg-glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .bg-glow-1 { top: -200px; right: -200px; background: #00d4ff; }
+    .bg-glow-2 { bottom: -200px; left: -200px; background: #6366f1; }
+    
+    /* Navigation */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 16px 32px;
+      background: rgba(3, 5, 8, 0.9);
+      border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+      backdrop-filter: blur(20px);
+      transition: all 0.3s;
+    }
+    
+    .nav.scrolled { padding: 12px 32px; background: rgba(3, 5, 8, 0.95); }
+    
+    .nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+    }
+    
+    .logo-hex {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #0d1219 0%, #131a24 100%);
+      border: 2px solid #00d4ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+      transition: all 0.3s;
+    }
+    
+    .logo:hover .logo-hex { box-shadow: 0 0 30px rgba(0, 212, 255, 0.5); }
+    .logo-hex span { font-size: 20px; font-weight: 800; color: #00d4ff; }
+    .logo-text { font-size: 24px; font-weight: 700; letter-spacing: 2px; }
+    .logo-text span { color: #00d4ff; }
+    
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    
+    .nav-links a {
+      color: #94a3b8;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 8px 0;
+      position: relative;
+      transition: color 0.3s;
+    }
+    
+    .nav-links a:hover, .nav-links a.active { color: #00d4ff; }
+    
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #00d4ff, #6366f1);
+      transition: width 0.3s;
+    }
+    
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+    
+    /* Mobile Menu */
+    .mobile-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+    
+    .mobile-toggle span {
+      width: 28px;
+      height: 3px;
+      background: #00d4ff;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+    
+    .mobile-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+    .mobile-toggle.active span:nth-child(2) { opacity: 0; }
+    .mobile-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
+    
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 80px;
+      left: 0;
+      right: 0;
+      background: rgba(3, 5, 8, 0.98);
+      border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+      padding: 24px;
+      transform: translateY(-100%);
+      opacity: 0;
+      transition: all 0.3s;
+    }
+    
+    .mobile-menu.active { transform: translateY(0); opacity: 1; }
+    
+    .mobile-menu a {
+      display: block;
+      padding: 16px 0;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 500;
+      border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+      transition: color 0.3s;
+    }
+    
+    .mobile-menu a:hover, .mobile-menu a.active { color: #00d4ff; }
+    
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 32px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    
+    .hero-content {
+      max-width: 900px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 24px;
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 50px;
+      font-size: 14px;
+      color: #00d4ff;
+      margin-bottom: 32px;
+      font-family: 'Share Tech Mono', monospace;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s ease forwards;
+    }
+    
+    .hero-badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #00d4ff;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.5); }
+      50% { opacity: 0.7; box-shadow: 0 0 0 10px rgba(0, 212, 255, 0); }
+    }
+    
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .hero h1 {
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      letter-spacing: -1px;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 0.8s ease 0.2s forwards;
+    }
+    
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, #00d4ff 0%, #6366f1 50%, #00d4ff 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradient-shift 4s ease infinite;
+    }
+    
+    @keyframes gradient-shift {
+      0% { background-position: 0% center; }
+      50% { background-position: 100% center; }
+      100% { background-position: 0% center; }
+    }
+    
+    .hero p {
+      font-size: 20px;
+      color: #94a3b8;
+      max-width: 700px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 0.8s ease 0.4s forwards;
+    }
+    
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 0.8s ease 0.6s forwards;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 32px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 16px;
+      text-decoration: none;
+      transition: all 0.3s;
+      cursor: pointer;
+      border: none;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #00d4ff 0%, #00a8cc 100%);
+      color: #030508;
+      box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 50px rgba(0, 212, 255, 0.5), 0 15px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .btn-secondary {
+      background: transparent;
+      color: #00d4ff;
+      border: 2px solid #00d4ff;
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(0, 212, 255, 0.1);
+      box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+    }
+    
+    /* Sections */
+    section { padding: 100px 32px; position: relative; }
+    .container { max-width: 1400px; margin: 0 auto; }
+    
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-header h2 { font-size: clamp(32px, 4vw, 48px); font-weight: 700; margin-bottom: 16px; }
+    .section-header h2 .accent { color: #00d4ff; }
+    .section-header p { color: #94a3b8; font-size: 18px; max-width: 650px; margin: 0 auto; }
+    
+    /* Services Grid */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 24px;
+    }
+    
+    .service-card {
+      background: linear-gradient(135deg, #0d1219 0%, rgba(13, 18, 25, 0.7) 100%);
+      border: 1px solid rgba(0, 212, 255, 0.1);
+      border-radius: 16px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #00d4ff, #6366f1);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s;
+    }
+    
+    .service-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(0, 212, 255, 0.3);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 212, 255, 0.1);
+    }
+    
+    .service-card:hover::before { transform: scaleX(1); }
+    
+    .service-icon {
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 14px;
+      margin-bottom: 24px;
+      font-size: 28px;
+      transition: all 0.3s;
+    }
+    
+    .service-card:hover .service-icon {
+      background: rgba(0, 212, 255, 0.15);
+      transform: scale(1.1);
+    }
+    
+    .service-card h3 { font-size: 22px; font-weight: 600; margin-bottom: 12px; }
+    .service-card p { color: #94a3b8; font-size: 16px; line-height: 1.7; }
+    
+    /* Stats Section */
+    .stats-section {
+      background: linear-gradient(180deg, #0a0e14 0%, #030508 100%);
+      border-top: 1px solid rgba(0, 212, 255, 0.1);
+      border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: 32px;
+    }
+    
+    .stat-number {
+      font-size: clamp(48px, 5vw, 72px);
+      font-weight: 800;
+      color: #00d4ff;
+      line-height: 1;
+      margin-bottom: 8px;
+      text-shadow: 0 0 40px rgba(0, 212, 255, 0.5);
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    
+    /* Features Section */
+    .features-section { background: rgba(10, 14, 20, 0.5); }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+    
+    .feature-card {
+      text-align: center;
+      padding: 40px 32px;
+      background: linear-gradient(135deg, #0d1219 0%, rgba(13, 18, 25, 0.7) 100%);
+      border: 1px solid rgba(0, 212, 255, 0.1);
+      border-radius: 16px;
+      transition: all 0.4s;
+    }
+    
+    .feature-card:hover {
+      border-color: #00d4ff;
+      transform: translateY(-8px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 212, 255, 0.15);
+    }
+    
+    .feature-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 212, 255, 0.1);
+      border-radius: 50%;
+      font-size: 36px;
+      transition: all 0.3s;
+    }
+    
+    .feature-card:hover .feature-icon {
+      background: rgba(0, 212, 255, 0.2);
+      transform: scale(1.1);
+    }
+    
+    .feature-card h3 { font-size: 22px; margin-bottom: 12px; }
+    .feature-card p { color: #94a3b8; font-size: 16px; line-height: 1.7; }
+    
+    /* About Preview */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    
+    .about-visual { position: relative; }
+    
+    .about-frame {
+      aspect-ratio: 1;
+      background: linear-gradient(135deg, #0d1219 0%, #0a0e14 100%);
+      border: 2px solid rgba(0, 212, 255, 0.2);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .about-frame::before {
+      content: '';
+      position: absolute;
+      width: 150%;
+      height: 150%;
+      background: conic-gradient(from 0deg, transparent, rgba(0, 212, 255, 0.3), transparent);
+      animation: rotate 8s linear infinite;
+    }
+    
+    @keyframes rotate { 100% { transform: rotate(360deg); } }
+    
+    .about-logo {
+      width: 200px;
+      height: 200px;
+      background: linear-gradient(135deg, #0d1219 0%, #131a24 100%);
+      border: 3px solid #00d4ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      box-shadow: 0 0 60px rgba(0, 212, 255, 0.4);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .about-logo span { font-size: 64px; font-weight: 800; color: #00d4ff; }
+    
+    .about-content h2 { font-size: clamp(32px, 4vw, 44px); font-weight: 700; margin-bottom: 24px; }
+    .about-content h2 .accent { color: #00d4ff; }
+    .about-content p { color: #94a3b8; font-size: 18px; margin-bottom: 20px; line-height: 1.8; }
+    .about-content .btn { margin-top: 16px; }
+    
+    /* Who We Work With */
+    .who-section { background: rgba(10, 14, 20, 0.5); }
+    
+    .who-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    
+    .who-card {
+      background: linear-gradient(135deg, #0d1219 0%, rgba(13, 18, 25, 0.7) 100%);
+      border: 1px solid rgba(0, 212, 255, 0.1);
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      transition: all 0.4s;
+    }
+    
+    .who-card:hover {
+      border-color: #00d4ff;
+      transform: translateY(-8px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 212, 255, 0.15);
+    }
+    
+    .who-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 212, 255, 0.1);
+      border-radius: 50%;
+      font-size: 32px;
+      transition: all 0.3s;
+    }
+    
+    .who-card:hover .who-icon { transform: scale(1.1); }
+    .who-card h3 { font-size: 20px; margin-bottom: 12px; }
+    .who-card p { color: #94a3b8; font-size: 15px; line-height: 1.7; }
+    
+    /* CTA Section */
+    .cta-section { text-align: center; }
+    
+    .cta-box {
+      background: linear-gradient(135deg, #0d1219 0%, rgba(99, 102, 241, 0.15) 100%);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 24px;
+      padding: 64px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      top: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(0, 212, 255, 0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    
+    .cta-box h2 { font-size: clamp(32px, 4vw, 44px); font-weight: 700; margin-bottom: 16px; position: relative; }
+    .cta-box h2 .accent { color: #00d4ff; }
+    .cta-box p { color: #94a3b8; font-size: 18px; max-width: 600px; margin: 0 auto 32px; position: relative; }
+    .cta-buttons { display: flex; gap: 16px; justify-content: center; position: relative; flex-wrap: wrap; }
+    
+    /* Footer */
+    footer {
+      background: #030508;
+      border-top: 1px solid rgba(0, 212, 255, 0.1);
+      padding: 64px 32px 32px;
+    }
+    
+    .footer-grid {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+    
+    .footer-brand .logo { margin-bottom: 16px; }
+    .footer-brand p { color: #64748b; font-size: 15px; line-height: 1.7; }
+    
+    .footer-links h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px; color: #fff; }
+    .footer-links ul { list-style: none; }
+    .footer-links li { margin-bottom: 12px; }
+    .footer-links a { color: #64748b; text-decoration: none; font-size: 15px; transition: all 0.3s; display: inline-block; }
+    .footer-links a:hover { color: #00d4ff; transform: translateX(5px); }
+    
+    .footer-bottom {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding-top: 32px;
+      border-top: 1px solid rgba(0, 212, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .footer-bottom p { color: #64748b; font-size: 14px; }
+    .social-links { display: flex; gap: 12px; }
+    
+    .social-link {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0d1219;
+      border: 1px solid rgba(0, 212, 255, 0.1);
+      border-radius: 10px;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .social-link:hover {
+      border-color: #00d4ff;
+      color: #00d4ff;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+    }
+    
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .features-grid, .who-grid { grid-template-columns: repeat(2, 1fr); }
+      .about-grid { grid-template-columns: 1fr; gap: 48px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    
+    @media (max-width: 768px) {
+      .nav { padding: 12px 20px; }
+      .nav-links { display: none; }
+      .mobile-toggle { display: flex; }
+      .mobile-menu { display: block; }
+      section { padding: 60px 20px; }
+      .hero { padding: 100px 20px 60px; }
+      .stats-grid, .features-grid, .who-grid { grid-template-columns: 1fr; }
+      .services-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; text-align: center; }
+      .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+      .cta-box { padding: 40px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-hex"><span>W</span></div>
+        <span class="logo-text">WHITTECH<span>.AI</span></span>
+      </a>
+      
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" class="active">Home</a>
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="projects.html">Projects</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">Custom Software, Fast</div>
+      <h1>Your Idea.<br><span class="gradient">Built in Weeks, Not Months.</span></h1>
+      <p>Custom software for construction companies, startups, and small businesses. We turn your workflow headaches into streamlined applications—flexible, affordable, and built exactly the way you need it.</p>
+      <div class="hero-cta">
+        <a href="contact.html" class="btn btn-primary">⚡ Get a Free Quote</a>
+        <a href="projects.html" class="btn btn-secondary">📁 See Our Work</a>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Services Section -->
+  <section>
+    <div class="container">
+      <div class="section-header">
+        <h2>What We <span class="accent">Build</span></h2>
+        <p>From simple calculators to full-scale management platforms—we build exactly what you need, nothing more, nothing less.</p>
+      </div>
+      
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">📊</div>
+          <h3>Estimation & Bidding Tools</h3>
+          <p>Custom calculators, material takeoff tools, and bid generators that match your actual pricing structure. Stop wrestling with spreadsheets.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">📋</div>
+          <h3>Project Management Apps</h3>
+          <p>Track jobs, crews, schedules, and budgets in one place. Built around how you actually work—not how software companies think you should.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">📱</div>
+          <h3>Field & Mobile Tools</h3>
+          <p>Apps your crew can actually use on the jobsite. Time tracking, daily logs, photo documentation, punch lists—all synced in real-time.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🤖</div>
+          <h3>AI-Powered Automation</h3>
+          <p>Let AI handle the repetitive stuff. Document processing, report generation, data entry, and smart alerts that save hours every week.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🔗</div>
+          <h3>System Integrations</h3>
+          <p>Connect your existing tools. QuickBooks, Google Sheets, CRMs, supplier catalogs—we make your software talk to each other.</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">💡</div>
+          <h3>Custom Solutions</h3>
+          <p>Got a unique problem? We love those. If you can describe what you need, we can probably build it—and faster than you'd expect.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">2-4</div>
+          <div class="stat-label">Week Turnaround</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Custom Built</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">0</div>
+          <div class="stat-label">Monthly Fees*</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">∞</div>
+          <div class="stat-label">Flexibility</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Why <span class="accent">WhitTech.AI</span>?</h2>
+        <p>We're not a big agency with endless overhead. We're builders who understand your business.</p>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Rapid Development</h3>
+          <p>Most projects delivered in 2-4 weeks. We move fast because we've built similar tools before and know what works.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3>Built to Your Specs</h3>
+          <p>No templates, no "that's how the software works." Every feature is designed around your actual workflow and terminology.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💰</div>
+          <h3>Transparent Pricing</h3>
+          <p>Fixed quotes for fixed scopes. No surprise bills, no scope creep charges. You know exactly what you're paying before we start.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔧</div>
+          <h3>Easy to Change</h3>
+          <p>Business evolves. Your software should too. We build modular systems that grow with you and are easy to modify later.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🤝</div>
+          <h3>Direct Communication</h3>
+          <p>No account managers or ticket systems. You talk directly to the person building your software. Questions get answered fast.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📚</div>
+          <h3>You Own Everything</h3>
+          <p>Your code, your data, your application. We hand over complete ownership. No vendor lock-in, no hostage situations.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- About Preview -->
+  <section>
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-visual">
+          <div class="about-frame">
+            <div class="about-logo"><span>W</span></div>
+          </div>
+        </div>
+        <div class="about-content">
+          <h2>Built by a <span class="accent">Problem Solver</span></h2>
+          <p>I spent 18+ years in the field—installing systems, managing projects, estimating jobs, and dealing with the same operational headaches you face. I know what it's like to need a tool that doesn't exist, or to outgrow a spreadsheet that's held together with duct tape.</p>
+          <p>WhitTech.AI exists because I started building tools for myself and realized others needed the same thing: custom software that solves real problems, built by someone who actually understands the work.</p>
+          <a href="about.html" class="btn btn-secondary">👤 Learn More About Us</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Who We Work With -->
+  <section class="who-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Who We <span class="accent">Work With</span></h2>
+        <p>If you've ever thought "there should be an app for this," we should talk.</p>
+      </div>
+      
+      <div class="who-grid">
+        <div class="who-card">
+          <div class="who-icon">🏗️</div>
+          <h3>Construction Companies</h3>
+          <p>GCs, subcontractors, specialty trades. Estimation tools, project tracking, crew management, and jobsite apps built for how construction actually works.</p>
+        </div>
+        <div class="who-card">
+          <div class="who-icon">🚀</div>
+          <h3>Startups</h3>
+          <p>Need an MVP fast? We build functional prototypes that you can show investors and test with real users—without burning through your runway.</p>
+        </div>
+        <div class="who-card">
+          <div class="who-icon">💼</div>
+          <h3>Small Businesses</h3>
+          <p>Service companies, consultants, local businesses. Custom tools that automate the stuff you hate doing and free you up for actual work.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-box">
+        <h2>Got an Idea? <span class="accent">Let's Talk.</span></h2>
+        <p>Tell me what's slowing you down. I'll tell you if I can help—and give you a realistic timeline and quote. No pressure, no sales pitch.</p>
+        <div class="cta-buttons">
+          <a href="contact.html" class="btn btn-primary">🚀 Start a Conversation</a>
+          <a href="projects.html" class="btn btn-secondary">📁 View Projects</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Footer -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <div class="logo-hex"><span>W</span></div>
+          <span class="logo-text">WHITTECH<span>.AI</span></span>
+        </a>
+        <p>Custom software for construction companies, startups, and small businesses. Fast turnaround. Fair pricing. Built exactly how you need it.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="services.html">Estimation Tools</a></li>
+          <li><a href="services.html">Project Management</a></li>
+          <li><a href="services.html">Mobile Apps</a></li>
+          <li><a href="services.html">AI Automation</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h4>Work With Us</h4>
+        <ul>
+          <li><a href="contact.html">Get a Quote</a></li>
+          <li><a href="projects.html">See Examples</a></li>
+          <li><a href="about.html">Our Process</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 WhitTech.AI. All rights reserved. *Hosting costs may apply for web applications.</p>
+      <div class="social-links">
+        <a href="#" class="social-link" title="GitHub">GH</a>
+        <a href="#" class="social-link" title="LinkedIn">in</a>
+        <a href="#" class="social-link" title="X/Twitter">X</a>
+      </div>
+    </div>
+  </footer>
+  
+  <script>
+    // Mobile Menu Toggle
+    const mobileToggle = document.getElementById('mobileToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    
+    mobileToggle.addEventListener('click', () => {
+      mobileToggle.classList.toggle('active');
+      mobileMenu.classList.toggle('active');
+    });
+    
+    // Navbar scroll effect
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    });
+    
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+    
+    document.querySelectorAll('.service-card, .feature-card, .who-card, .stat-item').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(30px)';
+      el.style.transition = 'all 0.6s ease';
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>

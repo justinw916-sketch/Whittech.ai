@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services | WhitTech.AI - Custom Software Development</title>
+  <meta name="description" content="Custom software development services: estimation tools, project management apps, mobile solutions, AI automation, and more. Fast delivery, transparent pricing.">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Exo 2', -apple-system, sans-serif; background: #030508; min-height: 100vh; color: #fff; line-height: 1.6; overflow-x: hidden; }
+    .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: -1; }
+    .bg-glow { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); opacity: 0.15; pointer-events: none; z-index: -1; }
+    .bg-glow-1 { top: -200px; right: -200px; background: #00d4ff; }
+    .bg-glow-2 { bottom: -200px; left: -200px; background: #6366f1; }
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 16px 32px; background: rgba(3, 5, 8, 0.9); border-bottom: 1px solid rgba(0, 212, 255, 0.1); backdrop-filter: blur(20px); transition: all 0.3s; }
+    .nav.scrolled { padding: 12px 32px; background: rgba(3, 5, 8, 0.95); }
+    .nav-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #fff; }
+    .logo-hex { width: 48px; height: 48px; background: linear-gradient(135deg, #0d1219 0%, #131a24 100%); border: 2px solid #00d4ff; display: flex; align-items: center; justify-content: center; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); box-shadow: 0 0 20px rgba(0, 212, 255, 0.3); }
+    .logo-hex span { font-size: 20px; font-weight: 800; color: #00d4ff; }
+    .logo-text { font-size: 24px; font-weight: 700; letter-spacing: 2px; }
+    .logo-text span { color: #00d4ff; }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a { color: #94a3b8; text-decoration: none; font-weight: 500; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; padding: 8px 0; position: relative; transition: color 0.3s; }
+    .nav-links a:hover, .nav-links a.active { color: #00d4ff; }
+    .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: linear-gradient(90deg, #00d4ff, #6366f1); transition: width 0.3s; }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+    .mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 8px; }
+    .mobile-toggle span { width: 28px; height: 3px; background: #00d4ff; border-radius: 2px; transition: all 0.3s; }
+    .mobile-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+    .mobile-toggle.active span:nth-child(2) { opacity: 0; }
+    .mobile-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
+    .mobile-menu { display: none; position: fixed; top: 80px; left: 0; right: 0; background: rgba(3, 5, 8, 0.98); border-bottom: 1px solid rgba(0, 212, 255, 0.1); padding: 24px; transform: translateY(-100%); opacity: 0; transition: all 0.3s; }
+    .mobile-menu.active { transform: translateY(0); opacity: 1; }
+    .mobile-menu a { display: block; padding: 16px 0; color: #94a3b8; text-decoration: none; font-size: 18px; font-weight: 500; border-bottom: 1px solid rgba(0, 212, 255, 0.1); }
+    .mobile-menu a:hover, .mobile-menu a.active { color: #00d4ff; }
+    .page-header { padding: 160px 32px 100px; text-align: center; position: relative; }
+    .page-header::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(0, 212, 255, 0.08) 0%, transparent 60%); pointer-events: none; }
+    .page-header h1 { font-size: clamp(44px, 6vw, 72px); font-weight: 800; margin-bottom: 20px; position: relative; opacity: 0; transform: translateY(30px); animation: fadeUp 0.8s ease forwards; }
+    .page-header h1 .accent { background: linear-gradient(135deg, #00d4ff 0%, #6366f1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .page-header p { color: #94a3b8; font-size: 20px; max-width: 650px; margin: 0 auto; position: relative; opacity: 0; transform: translateY(30px); animation: fadeUp 0.8s ease 0.2s forwards; }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    section { padding: 100px 32px; position: relative; }
+    .container { max-width: 1400px; margin: 0 auto; }
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-header h2 { font-size: clamp(32px, 4vw, 48px); font-weight: 700; margin-bottom: 16px; }
+    .section-header h2 .accent { color: #00d4ff; }
+    .section-header p { color: #94a3b8; font-size: 18px; max-width: 600px; margin: 0 auto; }
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 32px; }
+    .service-card { background: linear-gradient(135deg, #0d1219 0%, rgba(13, 18, 25, 0.7) 100%); border: 1px solid rgba(0, 212, 255, 0.1); border-radius: 20px; padding: 40px; transition: all 0.4s; position: relative; overflow: hidden; }
+    .service-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #00d4ff, #6366f1); transform: scaleX(0); transform-origin: left; transition: transform 0.4s; }
+    .service-card:hover { transform: translateY(-8px); border-color: rgba(0, 212, 255, 0.3); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 212, 255, 0.1); }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-icon { width: 72px; height: 72px; display: flex; align-items: center; justify-content: center; background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 16px; margin-bottom: 28px; font-size: 32px; transition: all 0.3s; }
+    .service-card:hover .service-icon { transform: scale(1.1); background: rgba(0, 212, 255, 0.15); }
+    .service-card h3 { font-size: 24px; font-weight: 600; margin-bottom: 16px; }
+    .service-card > p { color: #94a3b8; font-size: 16px; line-height: 1.7; margin-bottom: 24px; }
+    .service-features { list-style: none; }
+    .service-features li { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; color: #94a3b8; font-size: 15px; border-bottom: 1px solid rgba(0, 212, 255, 0.05); }
+    .service-features li:last-child { border-bottom: none; }
+    .service-features li::before { content: '✓'; color: #00d4ff; font-weight: 700; flex-shrink: 0; }
+    .pricing-section { background: rgba(10, 14, 20, 0.5); }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; max-width: 1100px; margin: 0 auto; }
+    .pricing-card { background: linear-gradient(135deg, #0d1219 0%, rgba(13, 18, 25, 0.7) 100%); border: 1px solid rgba(0, 212, 255, 0.1); border-radius: 20px; padding: 40px; text-align: center; transition: all 0.4s; position: relative; }
+    .pricing-card.featured { border-color: #00d4ff; box-shadow: 0 0 40px rgba(0, 212, 255, 0.15); }
+    .pricing-card.featured::before { content: 'Most Popular'; position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #00d4ff, #6366f1); color: #030508; padding: 8px 24px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+    .pricing-card:hover { transform: translateY(-8px); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4); }
+    .pricing-card h3 { font-size: 24px; margin-bottom: 8px; }
+    .pricing-card .price { font-size: 56px; font-weight: 800; color: #00d4ff; margin-bottom: 8px; line-height: 1; }
+    .pricing-card .price span { font-size: 20px; color: #94a3b8; font-weight: 400; }
+    .pricing-card .desc { color: #64748b; font-size: 15px; margin-bottom: 32px; }
+    .pricing-features { list-style: none; text-align: left; margin-bottom: 32px; }
+    .pricing-features li { padding: 14px 0; border-bottom: 1px solid rgba(0, 212, 255, 0.1); color: #94a3b8; font-size: 15px; display: flex; align-items: center; gap: 12px; }
+    .pricing-features li::before { content: '✓'; color: #00d4ff; font-weight: 700; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 32px; border-radius: 10px; font-family: inherit; font-weight: 600; font-size: 16px; text-decoration: none; transition: all 0.3s; width: 100%; cursor: pointer; border: none; }
+    .btn-primary { background: linear-gradient(135deg, #00d4ff 0%, #00a8cc 100%); color: #030508; box-shadow: 0 0 30px rgba(0, 212, 255, 0.4); }
+    .btn-primary:hover { box-shadow: 0 0 50px rgba(0, 212, 255, 0.5); transform: translateY(-2px); }
+    .btn-secondary { background: transparent; color: #00d4ff; border: 2px solid #00d4ff; }
+    .btn-secondary:hover { background: rgba(0, 212, 255, 0.1); }
+    .examples-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .example-card { background: linear-gradient(135deg, #0d1219 0%, rgba(13, 18, 25, 0.7) 100%); border: 1px solid rgba(0, 212, 255, 0.1); border-radius: 16px; padding: 32px; transition: all 0.3s; }
+    .example-card:hover { border-color: rgba(0, 212, 255, 0.3); transform: translateY(-5px); }
+    .example-card h4 { font-size: 18px; margin-bottom: 12px; color: #00d4ff; }
+    .example-card p { color: #94a3b8; font-size: 15px; line-height: 1.7; }
+    .faq-section { background: rgba(10, 14, 20, 0.5); }
+    .faq-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 1000px; margin: 0 auto; }
+    .faq-item { background: linear-gradient(135deg, #0d1219 0%, rgba(13, 18, 25, 0.7) 100%); border: 1px solid rgba(0, 212, 255, 0.1); border-radius: 16px; padding: 28px; transition: all 0.3s; }
+    .faq-item:hover { border-color: rgba(0, 212, 255, 0.3); }
+    .faq-item h3 { font-size: 17px; margin-bottom: 12px; }
+    .faq-item p { color: #94a3b8; font-size: 15px; line-height: 1.7; }
+    .cta-box { background: linear-gradient(135deg, #0d1219 0%, rgba(99, 102, 241, 0.15) 100%); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 24px; padding: 64px; text-align: center; position: relative; overflow: hidden; }
+    .cta-box::before { content: ''; position: absolute; top: -150px; left: 50%; transform: translateX(-50%); width: 500px; height: 500px; background: radial-gradient(circle, rgba(0, 212, 255, 0.15) 0%, transparent 60%); pointer-events: none; }
+    .cta-box h2 { font-size: 36px; margin-bottom: 16px; position: relative; }
+    .cta-box h2 .accent { color: #00d4ff; }
+    .cta-box p { color: #94a3b8; font-size: 18px; max-width: 550px; margin: 0 auto 32px; position: relative; }
+    footer { background: #030508; border-top: 1px solid rgba(0, 212, 255, 0.1); padding: 64px 32px 32px; }
+    .footer-grid { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+    .footer-brand p { color: #64748b; font-size: 15px; line-height: 1.7; margin-top: 16px; }
+    .footer-links h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px; }
+    .footer-links ul { list-style: none; }
+    .footer-links li { margin-bottom: 12px; }
+    .footer-links a { color: #64748b; text-decoration: none; font-size: 15px; transition: all 0.3s; display: inline-block; }
+    .footer-links a:hover { color: #00d4ff; transform: translateX(5px); }
+    .footer-bottom { max-width: 1400px; margin: 0 auto; padding-top: 32px; border-top: 1px solid rgba(0, 212, 255, 0.1); display: flex; justify-content: space-between; align-items: center; }
+    .footer-bottom p { color: #64748b; font-size: 14px; }
+    .social-links { display: flex; gap: 12px; }
+    .social-link { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: #0d1219; border: 1px solid rgba(0, 212, 255, 0.1); border-radius: 10px; color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 600; transition: all 0.3s; }
+    .social-link:hover { border-color: #00d4ff; color: #00d4ff; transform: translateY(-3px); }
+    @media (max-width: 1024px) { .pricing-grid { grid-template-columns: 1fr; max-width: 450px; } .examples-grid, .faq-grid { grid-template-columns: 1fr; } .footer-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 768px) { .nav { padding: 12px 20px; } .nav-links { display: none; } .mobile-toggle { display: flex; } .mobile-menu { display: block; } section { padding: 60px 20px; } .page-header { padding: 120px 20px 60px; } .services-grid { grid-template-columns: 1fr; } .footer-grid { grid-template-columns: 1fr; text-align: center; } .footer-bottom { flex-direction: column; gap: 16px; } .cta-box { padding: 40px 24px; } }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="logo"><div class="logo-hex"><span>W</span></div><span class="logo-text">WHITTECH<span>.AI</span></span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="services.html" class="active">Services</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <button class="mobile-toggle" id="mobileToggle"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="services.html" class="active">Services</a>
+    <a href="projects.html">Projects</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <header class="page-header">
+    <h1>Our <span class="accent">Services</span></h1>
+    <p>Flexible, customizable software solutions built fast. From simple tools to complete platforms—we build what you need, how you need it.</p>
+  </header>
+  <section>
+    <div class="container">
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">📊</div>
+          <h3>Estimation & Bidding Tools</h3>
+          <p>Stop wrestling with spreadsheets. Get custom calculators and bid generators built around your actual pricing, markup rules, and workflow.</p>
+          <ul class="service-features"><li>Material takeoff calculators</li><li>Labor cost estimators with crew rates</li><li>Automatic markup & margin application</li><li>Professional PDF proposal generation</li><li>Historical job data tracking & analytics</li></ul>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">📋</div>
+          <h3>Project Management</h3>
+          <p>Track everything in one place—jobs, crews, schedules, budgets. Built around how you actually manage projects, not how software thinks you should.</p>
+          <ul class="service-features"><li>Job tracking dashboards</li><li>Crew scheduling & assignment</li><li>Budget vs. actual cost tracking</li><li>Milestone & deadline management</li><li>Client communication portals</li></ul>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">📱</div>
+          <h3>Field & Mobile Apps</h3>
+          <p>Apps that actually work on the jobsite. Simple interfaces, offline capability, and real-time sync when you're back in range.</p>
+          <ul class="service-features"><li>Time tracking & digital timesheets</li><li>Daily logs & progress reports</li><li>Photo documentation with timestamps</li><li>Punch lists & inspection checklists</li><li>Equipment & material tracking</li></ul>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🤖</div>
+          <h3>AI-Powered Automation</h3>
+          <p>Let AI handle the repetitive work. Document processing, data entry, report generation, and smart alerts that catch problems early.</p>
+          <ul class="service-features"><li>Automated report generation</li><li>Document scanning & data extraction</li><li>Smart notifications & alerts</li><li>Predictive scheduling assistance</li><li>AI chatbots & virtual assistants</li></ul>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">🔗</div>
+          <h3>System Integrations</h3>
+          <p>Make your existing tools work together. Connect your accounting, scheduling, CRM, and field apps so data flows automatically.</p>
+          <ul class="service-features"><li>QuickBooks & accounting sync</li><li>Google Workspace integration</li><li>CRM data synchronization</li><li>Supplier catalog imports</li><li>Custom API development</li></ul>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">💡</div>
+          <h3>Custom Solutions</h3>
+          <p>Got a unique problem? Perfect. We love building tools that don't exist yet. If you can describe it, we can probably build it.</p>
+          <ul class="service-features"><li>Startup MVPs & prototypes</li><li>Internal business tools</li><li>Customer-facing portals</li><li>Data dashboards & analytics</li><li>Workflow automation systems</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="pricing-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Simple <span class="accent">Pricing</span></h2>
+        <p>No hourly guessing games. Fixed quotes for fixed scopes. You know what you're paying before we start.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>Quick Tools</h3>
+          <div class="price">$1,500<span>+</span></div>
+          <p class="desc">Simple calculators & utilities</p>
+          <ul class="pricing-features"><li>Single-purpose tools</li><li>Web-based interface</li><li>1-2 week delivery</li><li>Basic customization</li><li>30-day support included</li></ul>
+          <a href="contact.html" class="btn btn-secondary">Get Quote</a>
+        </div>
+        <div class="pricing-card featured">
+          <h3>Full Applications</h3>
+          <div class="price">$5,000<span>+</span></div>
+          <p class="desc">Complete business solutions</p>
+          <ul class="pricing-features"><li>Multi-feature platforms</li><li>User accounts & permissions</li><li>2-4 week delivery</li><li>Full customization</li><li>90-day support included</li></ul>
+          <a href="contact.html" class="btn btn-primary">Get Quote</a>
+        </div>
+        <div class="pricing-card">
+          <h3>Enterprise</h3>
+          <div class="price">Custom</div>
+          <p class="desc">Large-scale or complex projects</p>
+          <ul class="pricing-features"><li>Complex integrations</li><li>Multiple user roles</li><li>Timeline varies by scope</li><li>Unlimited customization</li><li>Ongoing support available</li></ul>
+          <a href="contact.html" class="btn btn-secondary">Let's Talk</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="container">
+      <div class="section-header">
+        <h2>Example <span class="accent">Projects</span></h2>
+        <p>Here's what we've built for people like you.</p>
+      </div>
+      <div class="examples-grid">
+        <div class="example-card"><h4>🔧 Electrical Bid Calculator</h4><p>Custom estimation tool for an electrical contractor. Calculates wire runs, panel loads, labor hours, and generates professional proposals. Replaced a complex spreadsheet that took 2 hours per bid—now takes 15 minutes.</p></div>
+        <div class="example-card"><h4>🏠 Property Inspection App</h4><p>Mobile app for a property management company. Technicians document inspections with photos, checklists auto-generate work orders, and reports are delivered to clients automatically. Eliminated paperwork entirely.</p></div>
+        <div class="example-card"><h4>📦 Inventory Tracker</h4><p>Real-time inventory system for a small distributor. Tracks stock levels across locations, auto-generates purchase orders at reorder points, syncs with QuickBooks. Ended "we're out of stock" surprises.</p></div>
+        <div class="example-card"><h4>📅 Crew Scheduling Platform</h4><p>Scheduling tool for a concrete company. Dispatchers assign crews to jobs, workers get notifications, and the office sees real-time status updates. Cut scheduling phone calls by 70%.</p></div>
+      </div>
+    </div>
+  </section>
+  <section class="faq-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Common <span class="accent">Questions</span></h2>
+      </div>
+      <div class="faq-grid">
+        <div class="faq-item"><h3>How fast can you deliver?</h3><p>Most projects ship in 2-4 weeks. Simple tools can be done in a week. Complex platforms might take 6-8 weeks. I'll give you a realistic timeline upfront—no bait and switch.</p></div>
+        <div class="faq-item"><h3>Can you modify existing software?</h3><p>Sometimes. If you have source code access, yes. If you're trying to customize off-the-shelf software, usually I'd recommend building something custom instead—it's often faster and cheaper in the long run.</p></div>
+        <div class="faq-item"><h3>What if I need changes later?</h3><p>That's expected! I build modular code that's easy to modify. Post-launch changes are billed hourly or as a small fixed-price add-on, depending on scope. Most changes are quick and affordable.</p></div>
+        <div class="faq-item"><h3>Do you handle hosting?</h3><p>I can set up hosting and help you manage it, or hand off to your IT team. Hosting costs are separate—usually $5-50/month for most apps depending on traffic and storage needs.</p></div>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="container">
+      <div class="cta-box">
+        <h2>Ready to <span class="accent">Streamline</span>?</h2>
+        <p>Tell me what's slowing you down. I'll tell you what it would take to fix it—timeline, cost, and approach. No pressure.</p>
+        <a href="contact.html" class="btn btn-primary" style="width: auto; padding: 18px 40px;">🚀 Get a Free Quote</a>
+      </div>
+    </div>
+  </section>
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand"><a href="index.html" class="logo"><div class="logo-hex"><span>W</span></div><span class="logo-text">WHITTECH<span>.AI</span></span></a><p>Custom software for construction companies, startups, and small businesses. Fast turnaround. Fair pricing. Built exactly how you need it.</p></div>
+      <div class="footer-links"><h4>Navigation</h4><ul><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="services.html">Services</a></li><li><a href="projects.html">Projects</a></li><li><a href="contact.html">Contact</a></li></ul></div>
+      <div class="footer-links"><h4>Services</h4><ul><li><a href="services.html">Estimation Tools</a></li><li><a href="services.html">Project Management</a></li><li><a href="services.html">Mobile Apps</a></li><li><a href="services.html">AI Automation</a></li></ul></div>
+      <div class="footer-links"><h4>Work With Us</h4><ul><li><a href="contact.html">Get a Quote</a></li><li><a href="projects.html">See Examples</a></li><li><a href="about.html">Our Process</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>© 2025 WhitTech.AI. All rights reserved.</p><div class="social-links"><a href="#" class="social-link">GH</a><a href="#" class="social-link">in</a><a href="#" class="social-link">X</a></div></div>
+  </footer>
+  <script>
+    const mobileToggle = document.getElementById('mobileToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileToggle.addEventListener('click', () => { mobileToggle.classList.toggle('active'); mobileMenu.classList.toggle('active'); });
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 50); });
+    const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.style.opacity = '1'; entry.target.style.transform = 'translateY(0)'; } }); }, { threshold: 0.1 });
+    document.querySelectorAll('.service-card, .pricing-card, .example-card, .faq-item').forEach(el => { el.style.opacity = '0'; el.style.transform = 'translateY(30px)'; el.style.transition = 'all 0.6s ease'; observer.observe(el); });
+  </script>
+</body>
+</html>
