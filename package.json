@@ -1,24 +1,18 @@
 {
-  "name": "temp_vite",
+  "name": "whittech-ai",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
-  "main": "server.js",
   "scripts": {
     "dev": "vite",
-    "dev:full": "concurrently \"node server/index.js\" \"vite\"",
     "build": "vite build",
-    "start": "node server.js",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.4.2",
     "cmdk": "^1.1.1",
-    "concurrently": "^9.2.1",
-    "cors": "^2.8.5",
-    "express": "^5.2.1",
     "framer-motion": "^12.23.26",
     "lucide-react": "^0.562.0",
     "react": "^19.2.0",
