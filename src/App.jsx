@@ -10,9 +10,9 @@ import Careers from './pages/Careers';
 import DocsLayout from './layouts/DocsLayout';
 import Docs from './pages/Docs';
 import About from './pages/About';
+import Services from './pages/Services';
 
-// Placeholder components for now
-const Services = () => <div className="container" style={{ paddingTop: '150px' }}><h1>Services</h1><p>Coming Soon...</p></div>;
+// Placeholder component
 const Projects = () => <div className="container" style={{ paddingTop: '150px' }}><h1>Projects</h1><p>Coming Soon...</p></div>;
 
 function App() {
