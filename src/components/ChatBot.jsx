@@ -85,26 +85,35 @@ export default function ChatBot() {
             <motion.button
                 className="chatbot-toggle"
                 onClick={() => setIsOpen(!isOpen)}
-                whileHover={{ scale: 1.1 }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 style={{
                     position: 'fixed',
                     bottom: '24px',
                     right: '24px',
-                    width: '60px',
-                    height: '60px',
-                    borderRadius: '50%',
+                    padding: isOpen ? '14px' : '14px 24px',
+                    borderRadius: isOpen ? '50%' : '30px',
                     background: 'linear-gradient(135deg, #00d4ff 0%, #00a8cc 100%)',
                     border: 'none',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    gap: '8px',
                     boxShadow: '0 4px 20px rgba(0, 212, 255, 0.4)',
                     zIndex: 1000,
+                    fontFamily: "'Exo 2', sans-serif",
+                    fontWeight: '600',
+                    fontSize: '15px',
+                    color: '#030508',
                 }}
             >
-                {isOpen ? <X size={28} color="#030508" /> : <MessageCircle size={28} color="#030508" />}
+                {isOpen ? <X size={24} color="#030508" /> : (
+                    <>
+                        <MessageCircle size={20} color="#030508" />
+                        Chat Now
+                    </>
+                )}
             </motion.button>
 
             {/* Chat Window */}
