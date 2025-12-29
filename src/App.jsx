@@ -11,9 +11,8 @@ import DocsLayout from './layouts/DocsLayout';
 import Docs from './pages/Docs';
 import About from './pages/About';
 import Services from './pages/Services';
-
-// Placeholder component
-const Projects = () => <div className="container" style={{ paddingTop: '150px' }}><h1>Projects</h1><p>Coming Soon...</p></div>;
+import Projects from './pages/Projects';
+import CRMDemo from './pages/CRMDemo';
 
 function App() {
   return (
@@ -23,6 +22,7 @@ function App() {
         <Route path="about" element={<About />} />
         <Route path="services" element={<Services />} />
         <Route path="projects" element={<Projects />} />
+        <Route path="projects/crm-demo" element={<CRMDemo />} />
         <Route path="contact" element={<Contact />} />
         <Route path="portal" element={<Portal />} />
         <Route path="playground" element={<Playground />} />
