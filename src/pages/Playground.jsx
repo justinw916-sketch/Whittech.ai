@@ -2,6 +2,7 @@ import { useState } from 'react';
 import AppContainer from '../components/playground/AppContainer';
 import ResourceConfigurator from '../components/demos/ResourceConfigurator';
 import ConstructionSchedule from '../components/demos/ConstructionSchedule';
+import MobileAppPreview from '../components/demos/MobileAppPreview';
 import { Package, Smartphone, Database, Server, Calendar } from 'lucide-react';
 
 export default function Playground() {
@@ -28,10 +29,10 @@ export default function Playground() {
         {
             id: 'mobile-preview',
             name: 'Mobile App Preview',
-            category: 'Simulation',
-            description: 'Interactive preview engine for mobile layout rendering (Coming Soon).',
-            icon: <Smartphone size={32} color="#64748b" />,
-            component: () => <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Module under development...</div>
+            category: 'Construction Tools',
+            description: '5 fully interactive field tools: Reports, Punch Lists, Safety, Materials, Time Cards.',
+            icon: <Smartphone size={32} color="#10b981" />,
+            component: MobileAppPreview
         }
     ];
 
