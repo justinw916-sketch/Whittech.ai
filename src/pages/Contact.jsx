@@ -37,7 +37,7 @@ export default function Contact() {
         <>
             <div className="page-header">
                 <h1>Let's <span className="accent">Talk</span></h1>
-                <p>Got an idea? A problem? A question? I'm here to help—and I respond fast.</p>
+                <p>Got an idea? A problem? A question? We're here to help—and we respond fast.</p>
             </div>
 
             <section>
@@ -45,7 +45,7 @@ export default function Contact() {
                     <div className="contact-grid">
                         <div className="contact-info">
                             <h2>Start the <span className="accent">Conversation</span></h2>
-                            <p>Whether you have a detailed spec or just a rough idea, I want to hear about it. Tell me what's slowing you down, and I'll tell you if I can help—with a realistic timeline and honest pricing. No sales pitch, no pressure.</p>
+                            <p>Whether you have a detailed spec or just a rough idea, we want to hear about it. Tell us what's slowing you down, and we'll tell you if we can help—with a realistic timeline and honest pricing. No sales pitch, no pressure.</p>
 
                             <div className="contact-methods">
                                 <div className="contact-method">
@@ -72,7 +72,7 @@ export default function Contact() {
                             </div>
 
                             <div className="response-box">
-                                <p><strong>⚡ Quick Response:</strong> I typically respond within 24 hours. For project inquiries, I'll follow up with questions to understand your needs, then provide a detailed proposal within a few days—usually including timeline, cost breakdown, and approach.</p>
+                                <p><strong>⚡ Quick Response:</strong> We typically respond within 24 hours. For project inquiries, we'll follow up with questions to understand your needs, then provide a detailed proposal within a few days—usually including timeline, cost breakdown, and approach.</p>
                             </div>
                         </div>
 
@@ -80,7 +80,7 @@ export default function Contact() {
                             {!submitted ? (
                                 <>
                                     <h2>Send a Message</h2>
-                                    <p>Fill out the form below and I'll get back to you quickly.</p>
+                                    <p>Fill out the form below and we'll get back to you quickly.</p>
 
                                     <form
                                         action="https://formsubmit.co/admin@whittech.ai"
@@ -138,7 +138,7 @@ export default function Contact() {
                                         </div>
 
                                         <div className="form-group">
-                                            <label htmlFor="message">Tell me about your project *</label>
+                                            <label htmlFor="message">Tell us about your project *</label>
                                             <textarea id="message" name="message" placeholder="What problem are you trying to solve? What would the ideal solution look like?" required></textarea>
                                         </div>
 
@@ -151,7 +151,7 @@ export default function Contact() {
                                 <div className="form-success show">
                                     <div className="icon">✅</div>
                                     <h3>Message Sent!</h3>
-                                    <p>Thanks for reaching out. I'll review your message and get back to you within 24 hours with next steps.</p>
+                                    <p>Thanks for reaching out. We'll review your message and get back to you within 24 hours with next steps.</p>
                                     <button onClick={() => setSubmitted(false)} className="btn btn-secondary" style={{ marginTop: '20px' }}>Send Another</button>
                                 </div>
                             )}
@@ -167,11 +167,11 @@ export default function Contact() {
                         <p>Common questions about working together.</p>
                     </div>
                     <div className="faq-grid">
-                        <div className="faq-item"><h3>What does the process look like?</h3><p>We start with a call to understand your needs. Then I'll send a proposal with scope, timeline, and pricing. Once approved, I build in sprints with regular check-ins.</p></div>
-                        <div className="faq-item"><h3>How long does a project take?</h3><p>Simple tools: 1-2 weeks. Full applications: 2-4 weeks. Complex platforms: 4-8 weeks. I'll give you a realistic timeline upfront.</p></div>
-                        <div className="faq-item"><h3>What's the typical cost?</h3><p>Quick tools start around $1,500. Full applications typically run $5,000-15,000. Complex projects vary. I quote fixed prices.</p></div>
-                        <div className="faq-item"><h3>Do I need to know exactly what I want?</h3><p>Not at all. You need to know the problem. I'll help you figure out the solution—that's part of what I do.</p></div>
-                        <div className="faq-item"><h3>What if I need changes later?</h3><p>Expected! I build modular code that's easy to modify. Post-launch changes are either hourly or quoted as small add-ons.</p></div>
+                        <div className="faq-item"><h3>What does the process look like?</h3><p>We start with a call to understand your needs. Then we'll send a proposal with scope, timeline, and pricing. Once approved, we build in sprints with regular check-ins.</p></div>
+                        <div className="faq-item"><h3>How long does a project take?</h3><p>Simple tools: 1-2 weeks. Full applications: 2-4 weeks. Complex platforms: 4-8 weeks. We'll give you a realistic timeline upfront.</p></div>
+                        <div className="faq-item"><h3>What's the typical cost?</h3><p>Quick tools start around $1,500. Full applications typically run $5,000-15,000. Complex projects vary. We quote fixed prices.</p></div>
+                        <div className="faq-item"><h3>Do I need to know exactly what I want?</h3><p>Not at all. You need to know the problem. We'll help you figure out the solution—that's part of what we do.</p></div>
+                        <div className="faq-item"><h3>What if I need changes later?</h3><p>Expected! We build modular code that's easy to modify. Post-launch changes are either hourly or quoted as small add-ons.</p></div>
                         <div className="faq-item"><h3>Do you offer ongoing support?</h3><p>All projects include 30-90 days of bug fixes and support (depending on size). Ongoing maintenance packages are available.</p></div>
                     </div>
                 </div>
