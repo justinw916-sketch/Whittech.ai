@@ -12,7 +12,7 @@ export default function About() {
                     <svg width="100%" height="100%">
                         <defs>
                             <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#6366f1" strokeWidth="0.5" />
+                                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#00d4ff" strokeWidth="0.5" />
                             </pattern>
                         </defs>
                         <rect width="100%" height="100%" fill="url(#grid)" />
@@ -20,8 +20,8 @@ export default function About() {
                 </div>
 
                 <div className="hero-content" style={{ position: 'relative', zIndex: 1 }}>
-                    <div className="hero-badge" style={{ borderColor: '#a855f7', color: '#a855f7' }}>The Future of Systems</div>
-                    <h1>Engineering <span className="gradient" style={{ backgroundImage: 'linear-gradient(135deg, #a855f7 0%, #ec4899 100%)' }}>Intelligence.</span></h1>
+                    <div className="hero-badge" style={{ borderColor: '#00d4ff', color: '#00d4ff' }}>The Future of Systems</div>
+                    <h1>Engineering <span className="gradient" style={{ backgroundImage: 'linear-gradient(135deg, #00d4ff 0%, #0ea5e9 100%)' }}>Intelligence.</span></h1>
                     <p style={{ fontSize: '20px', maxWidth: '700px' }}>
                         We don't just write code. We architect digital nervous systems for businesses that demand speed, scale, and absolute precision.
                     </p>
@@ -32,14 +32,14 @@ export default function About() {
             <section style={{ background: 'rgba(10, 14, 20, 0.5)' }}>
                 <div className="container">
                     <div className="section-header">
-                        <h2>Our <span className="accent" style={{ color: '#a855f7' }}>DNA</span></h2>
+                        <h2>Our <span className="accent" style={{ color: '#00d4ff' }}>DNA</span></h2>
                         <p>Born in the cloud, forged in code. We operate on three core principles.</p>
                     </div>
 
                     <div className="features-grid">
-                        <Principle icon={Zap} title="Velocity" desc="Speed is a feature. We deploy in days, not months, using our proprietary 'Hyper-Agile' framework." color="#a855f7" />
-                        <Principle icon={Shield} title="Resilience" desc="Zero tolerance for downtime. We build systems that heal themselves and scale automatically." color="#ec4899" />
-                        <Principle icon={Brain} title="Intelligence" desc="AI isn't an afterthought. It's the core of everything we build, from UI to database optimization." color="#6366f1" />
+                        <Principle icon={Zap} title="Velocity" desc="Speed is a feature. We deploy in days, not months, using our proprietary 'Hyper-Agile' framework." color="#00d4ff" />
+                        <Principle icon={Shield} title="Resilience" desc="Zero tolerance for downtime. We build systems that heal themselves and scale automatically." color="#0ea5e9" />
+                        <Principle icon={Brain} title="Intelligence" desc="AI isn't an afterthought. It's the core of everything we build, from UI to database optimization." color="#06b6d4" />
                     </div>
                 </div>
             </section>
