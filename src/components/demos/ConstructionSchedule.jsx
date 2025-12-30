@@ -12,9 +12,11 @@ const TRADES = [
     { id: 'plumbing', name: 'Plumbing', color: '#3b82f6' },
     { id: 'electrical', name: 'Electrical', color: '#eab308' },
     { id: 'hvac', name: 'HVAC', color: '#ef4444' },
+    { id: 'low_voltage', name: 'Low Voltage', color: '#8b5cf6' }, // Purple
+    { id: 'fire_alarm', name: 'Fire Alarm', color: '#ea580c' },   // Orange/Red
     { id: 'drywall', name: 'Drywall', color: '#ec4899' },
     { id: 'paint', name: 'Painting', color: '#10b981' },
-    { id: 'finish', name: 'Finishing', color: '#8b5cf6' },
+    { id: 'finish', name: 'Finishing', color: '#14b8a6' },
 ];
 
 const INITIAL_TASKS = [
@@ -23,17 +25,22 @@ const INITIAL_TASKS = [
     { id: 3, name: 'Structural Framing', trade: 'framing', startDay: 9, duration: 7, progress: 65 },
     { id: 4, name: 'Rough Plumbing', trade: 'plumbing', startDay: 13, duration: 4, progress: 0 },
     { id: 5, name: 'Rough Electrical', trade: 'electrical', startDay: 15, duration: 5, progress: 0 },
+    { id: 101, name: 'LV Cabling Rough', trade: 'low_voltage', startDay: 16, duration: 3, progress: 0 },
+    { id: 102, name: 'Fire Alarm Rough', trade: 'fire_alarm', startDay: 17, duration: 3, progress: 0 },
     { id: 6, name: 'HVAC Ducting', trade: 'hvac', startDay: 16, duration: 4, progress: 0 },
     { id: 7, name: 'Insulation & Drywall', trade: 'drywall', startDay: 22, duration: 6, progress: 0 },
+    { id: 201, name: 'LV Trim (Cameras)', trade: 'low_voltage', startDay: 29, duration: 2, progress: 0 },
+    { id: 202, name: 'Fire Alarm Trim', trade: 'fire_alarm', startDay: 30, duration: 2, progress: 0 },
+    { id: 203, name: 'Fire Alarm Test', trade: 'fire_alarm', startDay: 32, duration: 1, progress: 0 },
 ];
 
-const DAYS_TO_SHOW = 30;
+const DAYS_TO_SHOW = 45; // Increased range
+const DAY_WIDTH = 40;
 
 export default function ConstructionSchedule({ onStatusChange }) {
     const [tasks, setTasks] = useState(INITIAL_TASKS);
     const [viewOffset, setViewOffset] = useState(0);
     const [selectedTask, setSelectedTask] = useState(null);
-    const [currentTime, setCurrentTime] = useState(Date.now());
 
     // Auto-scroll simulation (optional, maybe just user scroll)
 
@@ -54,6 +61,19 @@ export default function ConstructionSchedule({ onStatusChange }) {
         setViewOffset(prev => Math.max(0, prev + (direction === 'left' ? -7 : 7)));
     };
 
+    const handleDragEnd = (taskId, info) => {
+        const deltaDays = Math.round(info.offset.x / DAY_WIDTH);
+        if (deltaDays === 0) return;
+
+        setTasks(prev => prev.map(t => {
+            if (t.id === taskId) {
+                const newStart = t.startDay + deltaDays;
+                return { ...t, startDay: newStart };
+            }
+            return t;
+        }));
+    };
+
     // Calculate Grid Positions
     const getGridPos = (start, duration) => {
         // Simple mapping: startDay relative to viewOffset
@@ -65,9 +85,9 @@ export default function ConstructionSchedule({ onStatusChange }) {
         const width = duration;
 
         return {
-            left: `${startIndex * 40}px`,
-            width: `${width * 40}px`,
-            visible: startIndex + width > 0 && startIndex < DAYS_TO_SHOW
+            left: startIndex * DAY_WIDTH,
+            width: duration * DAY_WIDTH,
+            visible: true // Simplified logic
         };
     };
 
@@ -88,7 +108,7 @@ export default function ConstructionSchedule({ onStatusChange }) {
                         <Calendar size={20} color="#00d4ff" />
                         Project Schedule <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '12px', color: '#94a3b8' }}>Phase 1</span>
                     </h2>
-                    <p style={{ margin: '4px 0 0 30px', fontSize: '13px', color: '#94a3b8' }}>Site Alpha • 85% On Schedule</p>
+                    <p style={{ margin: '4px 0 0 30px', fontSize: '13px', color: '#94a3b8' }}>Site Alpha • Drag tasks to reschedule</p>
                 </div>
 
                 <div style={{ display: 'flex', gap: '8px' }}>
@@ -162,7 +182,7 @@ export default function ConstructionSchedule({ onStatusChange }) {
 
                         {/* Task Bars */}
                         {tasks.map(task => {
-                            const { left, width, visible } = getGridPos(task.startDay, task.duration);
+                            const { left, width } = getGridPos(task.startDay, task.duration);
                             const trade = TRADES.find(t => t.id === task.trade);
 
                             // Don't render if completely out of view (left) or too far right
@@ -179,11 +199,17 @@ export default function ConstructionSchedule({ onStatusChange }) {
                                     }}
                                 >
                                     <motion.div
+                                        key={`${task.id}-${task.startDay}`} // Force re-render on date change for snappy update
                                         layoutId={`task-${task.id}`}
+                                        drag="x"
+                                        dragMomentum={false}
+                                        dragElastic={0.1}
+                                        onDragEnd={(e, info) => handleDragEnd(task.id, info)}
+                                        whileDrag={{ scale: 1.05, cursor: 'grabbing', zIndex: 50, boxShadow: '0 5px 15px rgba(0,0,0,0.5)' }}
                                         style={{
                                             position: 'absolute',
-                                            left,
-                                            width,
+                                            left: `${left}px`,
+                                            width: `${width}px`,
                                             top: '10px',
                                             height: '28px',
                                             background: trade ? `${trade.color}33` : '#475569',
@@ -200,7 +226,7 @@ export default function ConstructionSchedule({ onStatusChange }) {
                                         {/* Progress Bar Inside */}
                                         <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${task.progress}%`, background: trade.color, opacity: 0.3 }}></div>
 
-                                        <span style={{ zIndex: 1, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
+                                        <span style={{ zIndex: 1, textShadow: '0 1px 2px rgba(0,0,0,0.5)', pointerEvents: 'none' }}>
                                             {task.progress === 100 && <CheckCircle2 size={12} style={{ display: 'inline', marginRight: '4px', verticalAlign: '-2px' }} />}
                                             {task.name}
                                         </span>
