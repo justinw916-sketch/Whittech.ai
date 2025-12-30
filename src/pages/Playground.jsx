@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import AppContainer from '../components/playground/AppContainer';
 import ResourceConfigurator from '../components/demos/ResourceConfigurator';
-import KanbanBoard from '../components/demos/KanbanBoard';
-import { Package, Smartphone, Database, Server } from 'lucide-react';
+import ConstructionSchedule from '../components/demos/ConstructionSchedule';
+import { Package, Smartphone, Database, Server, Calendar } from 'lucide-react';
 
 export default function Playground() {
     const [activeApp, setActiveApp] = useState(null);
@@ -18,19 +18,19 @@ export default function Playground() {
             component: ResourceConfigurator
         },
         {
-            id: 'kanban',
-            name: 'Project Board',
-            category: 'Productivity',
-            description: 'Full-stack task management with drag-and-drop state persistence logic.',
-            icon: <Database size={32} color="#10b981" />,
-            component: KanbanBoard
+            id: 'schedule',
+            name: 'Job Site Scheduler',
+            category: 'Project Management',
+            description: 'Interactive Gantt chart for multi-phase construction timeline & critical path analysis.',
+            icon: <Calendar size={32} color="#f59e0b" />,
+            component: ConstructionSchedule
         },
         {
             id: 'mobile-preview',
             name: 'Mobile App Preview',
             category: 'Simulation',
             description: 'Interactive preview engine for mobile layout rendering (Coming Soon).',
-            icon: <Smartphone size={32} color="#f59e0b" />,
+            icon: <Smartphone size={32} color="#64748b" />,
             component: () => <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Module under development...</div>
         }
     ];
