@@ -61,9 +61,12 @@ export default function AppContainer({ title, onClose, children, externalStatus 
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-                        {displayStatus === 'connected' ? <Wifi size={14} color="#10b981" /> : <WifiOff size={14} color={displayStatus === 'deploying' ? '#f59e0b' : '#ef4444'} />}
-                        <span style={{ color: displayStatus === 'connected' ? '#10b981' : (displayStatus === 'deploying' ? '#f59e0b' : '#ef4444') }}>
-                            {displayStatus === 'connected' ? 'ONLINE' : (displayStatus === 'deploying' ? 'DEPLOYING' : 'OFFLINE')}
+                        {displayStatus === 'deploying' ?
+                            <WifiOff size={14} color="#f59e0b" /> :
+                            <Wifi size={14} color="#10b981" />
+                        }
+                        <span style={{ color: displayStatus === 'deploying' ? '#f59e0b' : '#10b981' }}>
+                            {displayStatus === 'deploying' ? 'DEPLOYING' : 'ONLINE'}
                         </span>
                     </div>
                     <div style={{ height: '20px', width: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
