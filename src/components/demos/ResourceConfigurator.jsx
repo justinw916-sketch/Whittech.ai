@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Cpu, HardDrive, Database, Zap, Rocket, Check, Copy, Download, Terminal, Activity, Wifi, Clock } from 'lucide-react';
+import { Cpu, HardDrive, Database, Zap, Rocket, Check, Copy, Download, Terminal, Activity, Wifi, Clock, Globe, Server, AlertTriangle, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Pricing configuration
@@ -15,6 +15,20 @@ const PRESETS = [
     { name: 'Enterprise', cpu: 16, ram: 64, storage: 1000, color: '#f59e0b', icon: '🏢' },
 ];
 
+const DO_REGIONS = [
+    { id: 'nyc', name: 'New York', flag: '🇺🇸', latency: 12 },
+    { id: 'lon', name: 'London', flag: '🇬🇧', latency: 78 },
+    { id: 'sgp', name: 'Singapore', flag: '🇸🇬', latency: 185 },
+    { id: 'fra', name: 'Frankfurt', flag: '🇩🇪', latency: 82 },
+];
+
+const OS_OPTIONS = [
+    { id: 'ubuntu', name: 'Ubuntu 24.04', icon: '🐧' },
+    { id: 'debian', name: 'Debian 12', icon: '🍥' },
+    { id: 'centos', name: 'CentOS Stream', icon: '💠' },
+    { id: 'alpine', name: 'Alpine Linux', icon: '🏔️' },
+];
+
 const DEPLOY_STAGES = [
     { name: 'Initializing', duration: 800, message: 'Initializing virtual environment...' },
     { name: 'Provisioning', duration: 1200, message: 'Provisioning compute resources...' },
@@ -26,7 +40,10 @@ const DEPLOY_STAGES = [
 
 export default function ResourceConfigurator({ onLog, onStatusChange }) {
     const [config, setConfig] = useState({ cpu: 4, ram: 8, storage: 100 });
+    const [region, setRegion] = useState(DO_REGIONS[0]);
+    const [os, setOs] = useState(OS_OPTIONS[0]);
     const [status, setStatus] = useState('idle'); // idle, deploying, active
+    const [stressTest, setStressTest] = useState(false);
     const [deployStage, setDeployStage] = useState(0);
     const [deployProgress, setDeployProgress] = useState(0);
     const [logs, setLogs] = useState([]);
@@ -34,6 +51,9 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
     const [copied, setCopied] = useState(false);
     const [uptime, setUptime] = useState(0);
     const [metrics, setMetrics] = useState({ cpu: 0, ram: 0, network: 0 });
+
+    // Calculate capacity
+    const estimatedVisitors = Math.floor((config.cpu * 5000) + (config.ram * 2000));
 
     // Calculate pricing
     const monthlyPrice = (config.cpu * PRICING.cpu) + (config.ram * PRICING.ram) + (config.storage * PRICING.storage);
@@ -86,9 +106,9 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
             }
 
             // Random technical logs
-            if (i === 1) addLog(`Allocated ${config.cpu} vCPU cores @ 3.2GHz`);
-            if (i === 2) addLog(`Mounted ${config.storage}GB NVMe SSD volume`);
-            if (i === 3) addLog(`Configured ${config.ram}GB DDR5 memory`);
+            if (i === 1) addLog(`Selected region: ${region.name} (${region.id})`);
+            if (i === 2) addLog(`Booting ${os.name} kernel image...`);
+            if (i === 3) addLog(`Allocated ${config.cpu} vCPU, ${config.ram}GB RAM`);
         }
 
         addLog('✅ Deployment complete! System is now active.', 'success');
@@ -108,18 +128,18 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
     useEffect(() => {
         if (status !== 'active') return;
         const interval = setInterval(() => {
-            setMetrics({
-                cpu: 15 + Math.random() * 25,
-                ram: 30 + Math.random() * 20,
-                network: Math.random() * 100
-            });
-        }, 2000);
+            setMetrics(prev => ({
+                cpu: stressTest ? Math.min(99, prev.cpu + 10) : Math.max(5, (15 + Math.random() * 25)),
+                ram: stressTest ? Math.min(95, prev.ram + 5) : Math.max(10, (30 + Math.random() * 20)),
+                network: stressTest ? Math.random() * 1000 : Math.random() * 100
+            }));
+        }, 1000);
         return () => clearInterval(interval);
-    }, [status]);
+    }, [status, stressTest]);
 
     // Copy configuration
     const copyConfig = () => {
-        const configStr = `WhitTech.AI Resource Configuration\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n• CPU: ${config.cpu} vCPU\n• RAM: ${config.ram} GB\n• Storage: ${config.storage} GB\n• Estimated Cost: $${displayPrice.toFixed(2)}/mo`;
+        const configStr = `WhitTech.AI Server Config\n━━━━━━━━━━━━━━━━━━━━\n• Region: ${region.name}\n• OS: ${os.name}\n• CPU: ${config.cpu} vCPU\n• RAM: ${config.ram} GB\n• Storage: ${config.storage} GB\n• Est. Visitors: ~${estimatedVisitors.toLocaleString()}/day`;
         navigator.clipboard.writeText(configStr);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
@@ -197,165 +217,163 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
                 </div>
             </div>
 
-            {/* Presets */}
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
-                {PRESETS.map((preset, i) => (
-                    <motion.button
-                        key={preset.name}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => applyPreset(preset)}
-                        style={{
-                            background: `linear-gradient(135deg, ${preset.color}22, ${preset.color}11)`,
-                            border: `1px solid ${preset.color}44`,
-                            padding: '12px 20px',
-                            borderRadius: '10px',
-                            cursor: 'pointer',
-                            color: '#fff',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            transition: 'all 0.2s'
-                        }}
-                    >
-                        <span style={{ fontSize: '18px' }}>{preset.icon}</span>
-                        <div style={{ textAlign: 'left' }}>
-                            <div style={{ fontWeight: '600', fontSize: '14px' }}>{preset.name}</div>
-                            <div style={{ fontSize: '11px', color: '#94a3b8' }}>
-                                {preset.cpu} vCPU • {preset.ram}GB • {preset.storage}GB
-                            </div>
+            {/* Config Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) minmax(300px, 2fr)', gap: '24px', marginBottom: '24px' }}>
+                {/* Left Col: Region, OS, Benchmarks */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    {/* Region Selection */}
+                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '12px' }}>
+                        <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <Globe size={14} /> Data Center Region
                         </div>
-                        <span style={{ marginLeft: '8px', fontSize: '11px', color: '#94a3b8' }}>[{i + 1}]</span>
-                    </motion.button>
-                ))}
-            </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                            {DO_REGIONS.map(r => (
+                                <button
+                                    key={r.id}
+                                    onClick={() => setRegion(r)}
+                                    style={{
+                                        background: region.id === r.id ? 'rgba(0, 212, 255, 0.1)' : 'rgba(255,255,255,0.05)',
+                                        border: region.id === r.id ? '1px solid #00d4ff' : '1px solid transparent',
+                                        padding: '8px',
+                                        borderRadius: '8px',
+                                        color: '#fff',
+                                        cursor: 'pointer',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                        fontSize: '13px'
+                                    }}
+                                >
+                                    <span>{r.flag} {r.name}</span>
+                                    <span style={{ fontSize: '10px', color: r.latency < 50 ? '#10b981' : '#f59e0b' }}>
+                                        {r.latency}ms
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                {/* Sliders Row */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
-                    {/* CPU Slider */}
-                    <SliderCard
-                        icon={<Cpu size={18} />}
-                        label="Processor (vCPU)"
-                        value={config.cpu}
-                        unit="Cores"
-                        min={1}
-                        max={32}
-                        step={1}
-                        color="#6366f1"
-                        price={config.cpu * PRICING.cpu}
-                        onChange={(v) => handleUpdate('cpu', v)}
-                    />
+                    {/* OS Selection */}
+                    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '12px' }}>
+                        <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <Server size={14} /> Operating System
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                            {OS_OPTIONS.map(o => (
+                                <button
+                                    key={o.id}
+                                    onClick={() => setOs(o)}
+                                    style={{
+                                        flex: 1,
+                                        background: os.id === o.id ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255,255,255,0.05)',
+                                        border: os.id === o.id ? '1px solid #6366f1' : '1px solid transparent',
+                                        padding: '8px',
+                                        borderRadius: '8px',
+                                        color: '#fff',
+                                        cursor: 'pointer',
+                                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
+                                        fontSize: '11px'
+                                    }}
+                                >
+                                    <span style={{ fontSize: '16px' }}>{o.icon}</span>
+                                    {o.name.split(' ')[0]}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
 
-                    {/* RAM Slider */}
-                    <SliderCard
-                        icon={<Database size={18} />}
-                        label="Memory (RAM)"
-                        value={config.ram}
-                        unit="GB"
-                        min={1}
-                        max={128}
-                        step={1}
-                        color="#10b981"
-                        price={config.ram * PRICING.ram}
-                        onChange={(v) => handleUpdate('ram', v)}
-                    />
-
-                    {/* Storage Slider */}
-                    <SliderCard
-                        icon={<HardDrive size={18} />}
-                        label="NVMe Storage"
-                        value={config.storage}
-                        unit="GB"
-                        min={10}
-                        max={2000}
-                        step={10}
-                        color="#f59e0b"
-                        price={config.storage * PRICING.storage}
-                        onChange={(v) => handleUpdate('storage', v)}
-                    />
-                </div>
-
-                {/* Bottom Row - Price & Terminal */}
-                <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '20px' }}>
-                    {/* Price Display */}
+                    {/* Capacity Estimator */}
                     <motion.div
                         layout
                         style={{
-                            background: 'linear-gradient(135deg, rgba(0,212,255,0.1), rgba(99,102,241,0.1))',
-                            border: '1px solid rgba(0,212,255,0.3)',
+                            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1))',
+                            border: '1px solid rgba(16, 185, 129, 0.2)',
                             padding: '20px',
                             borderRadius: '12px',
-                            textAlign: 'center',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'center'
+                            textAlign: 'center'
                         }}
                     >
-                        <div style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '8px' }}>Estimated Cost</div>
-                        <motion.div
-                            key={displayPrice}
-                            initial={{ scale: 1.1, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            style={{ fontSize: '36px', fontWeight: 'bold', color: '#00d4ff' }}
-                        >
-                            ${displayPrice.toFixed(2)}
-                            <span style={{ fontSize: '16px', color: '#94a3b8' }}>/mo</span>
-                        </motion.div>
-                        {billingCycle === 'yearly' && (
-                            <div style={{ fontSize: '12px', color: '#10b981', marginTop: '4px' }}>
-                                Saving ${(monthlyPrice * 12 * 0.2).toFixed(2)}/year
-                            </div>
-                        )}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: '#10b981', marginBottom: '4px' }}>
+                            <Users size={16} /> <span style={{ fontSize: '12px', fontWeight: '600' }}>CAPACITY PERF.</span>
+                        </div>
+                        <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#fff' }}>
+                            ~{(estimatedVisitors / 1000).toFixed(1)}k
+                        </div>
+                        <div style={{ fontSize: '11px', color: '#94a3b8' }}>Est. Daily Unique Visitors</div>
                     </motion.div>
-
-                    {/* Terminal Logs */}
-                    <div style={{
-                        background: '#0a0e14',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        borderRadius: '12px',
-                        overflow: 'hidden',
-                        minHeight: '180px',
-                        display: 'flex',
-                        flexDirection: 'column'
-                    }}>
-                        <div style={{
-                            padding: '10px 16px',
-                            background: 'rgba(255,255,255,0.03)',
-                            borderBottom: '1px solid rgba(255,255,255,0.1)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            fontSize: '13px',
-                            color: '#94a3b8'
-                        }}>
-                            <Terminal size={14} />
-                            System Log
-                        </div>
-                        <div style={{
-                            padding: '12px 16px',
-                            fontSize: '12px',
-                            fontFamily: 'Share Tech Mono, monospace',
-                            overflow: 'auto',
-                            flex: 1,
-                            maxHeight: '180px'
-                        }}>
-                            {logs.length === 0 ? (
-                                <div style={{ color: '#475569' }}>Awaiting deployment...</div>
-                            ) : (
-                                logs.map((log, i) => (
-                                    <div key={i} style={{
-                                        color: log.type === 'success' ? '#10b981' : log.type === 'system' ? '#00d4ff' : '#94a3b8',
-                                        marginBottom: '4px'
-                                    }}>
-                                        <span style={{ color: '#475569' }}>[{log.timestamp}]</span> {log.message}
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
                 </div>
 
+                {/* Right Col: Sliders & Presets */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    {/* Presets */}
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                        {PRESETS.map((preset, i) => (
+                            <motion.button
+                                key={preset.name}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => applyPreset(preset)}
+                                style={{
+                                    flex: 1,
+                                    background: `linear-gradient(135deg, ${preset.color}22, ${preset.color}11)`,
+                                    border: `1px solid ${preset.color}44`,
+                                    padding: '12px 20px',
+                                    borderRadius: '10px',
+                                    cursor: 'pointer',
+                                    color: '#fff',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    transition: 'all 0.2s',
+                                    minWidth: '140px'
+                                }}
+                            >
+                                <span style={{ fontSize: '18px' }}>{preset.icon}</span>
+                                <div style={{ textAlign: 'left' }}>
+                                    <div style={{ fontWeight: '600', fontSize: '14px' }}>{preset.name}</div>
+                                    <div style={{ fontSize: '11px', color: '#94a3b8' }}>
+                                        ${(preset.cpu * PRICING.cpu + preset.ram * PRICING.ram + preset.storage * PRICING.storage).toFixed(0)}/mo
+                                    </div>
+                                </div>
+                            </motion.button>
+                        ))}
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                        <SliderCard
+                            icon={<Cpu size={18} />}
+                            label="Processor (vCPU)"
+                            value={config.cpu}
+                            unit="Cores"
+                            min={1} max={32} step={1}
+                            color="#6366f1"
+                            price={config.cpu * PRICING.cpu}
+                            onChange={(v) => handleUpdate('cpu', v)}
+                        />
+                        <SliderCard
+                            icon={<Database size={18} />}
+                            label="Memory (RAM)"
+                            value={config.ram}
+                            unit="GB"
+                            min={1} max={128} step={1}
+                            color="#10b981"
+                            price={config.ram * PRICING.ram}
+                            onChange={(v) => handleUpdate('ram', v)}
+                        />
+                        <SliderCard
+                            icon={<HardDrive size={18} />}
+                            label="NVMe Storage"
+                            value={config.storage}
+                            unit="GB"
+                            min={10} max={2000} step={10}
+                            color="#f59e0b"
+                            price={config.storage * PRICING.storage}
+                            onChange={(v) => handleUpdate('storage', v)}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Bottom Section: Terminal + Status */}
+            <div>
                 {/* Deployment Progress - Full Width */}
                 {status === 'deploying' && (
                     <motion.div
@@ -364,7 +382,8 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
                         style={{
                             background: 'rgba(255,255,255,0.03)',
                             padding: '16px',
-                            borderRadius: '12px'
+                            borderRadius: '12px',
+                            marginBottom: '20px'
                         }}
                     >
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
@@ -384,92 +403,199 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
                     </motion.div>
                 )}
 
-                {/* Live Metrics - Full Width (when active) */}
+                {/* Dashboard (Active State) */}
                 {status === 'active' && (
                     <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="active-dashboard"
                         style={{
-                            background: 'rgba(16, 185, 129, 0.1)',
-                            border: '1px solid rgba(16, 185, 129, 0.3)',
-                            padding: '16px',
-                            borderRadius: '12px'
+                            background: stressTest ? 'rgba(239, 68, 68, 0.05)' : 'rgba(16, 185, 129, 0.05)',
+                            border: stressTest ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(16, 185, 129, 0.3)',
+                            borderRadius: '16px',
+                            padding: '24px',
+                            marginBottom: '24px',
+                            transition: 'all 0.3s'
                         }}
                     >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10b981' }}>
-                                <Activity size={16} />
-                                <span style={{ fontWeight: '600' }}>System Active</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{
+                                    padding: '8px',
+                                    borderRadius: '8px',
+                                    background: stressTest ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                                    color: stressTest ? '#ef4444' : '#10b981'
+                                }}>
+                                    {stressTest ? <AlertTriangle size={20} /> : <Activity size={20} />}
+                                </div>
+                                <div>
+                                    <div style={{ fontWeight: 'bold', fontSize: '16px', color: stressTest ? '#ef4444' : '#10b981' }}>
+                                        {stressTest ? 'SYSTEM UNDER LOAD' : 'SYSTEM HEALTHY'}
+                                    </div>
+                                    <div style={{ fontSize: '12px', color: '#94a3b8' }}>
+                                        {region.name} • {os.name} • Uptime: {formatUptime(uptime)}
+                                    </div>
+                                </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#94a3b8' }}>
-                                <Clock size={14} />
-                                {formatUptime(uptime)}
-                            </div>
+
+                            <button
+                                onClick={() => setStressTest(!stressTest)}
+                                style={{
+                                    background: stressTest ? '#ef4444' : 'rgba(255,255,255,0.05)',
+                                    color: stressTest ? '#fff' : '#ef4444',
+                                    border: '1px solid #ef4444',
+                                    padding: '8px 16px',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                    fontSize: '12px',
+                                    fontWeight: '600',
+                                    display: 'flex', alignItems: 'center', gap: '8px',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                <Zap size={14} />
+                                {stressTest ? 'STOP STRESS TEST' : 'RUN STRESS TEST'}
+                            </button>
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
-                            <MetricBar label="CPU" value={metrics.cpu} color="#6366f1" />
-                            <MetricBar label="RAM" value={metrics.ram} color="#10b981" />
-                            <MetricBar label="Network" value={metrics.network} color="#00d4ff" icon={<Wifi size={12} />} />
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+                            <MetricGauge label="vCPU Usage" value={metrics.cpu} color={metrics.cpu > 80 ? '#ef4444' : '#6366f1'} />
+                            <MetricGauge label="Memory Usage" value={metrics.ram} color={metrics.ram > 80 ? '#ef4444' : '#10b981'} />
+                            <MetricGauge label="Network I/O" value={metrics.network} max={1000} unit="Mbps" color="#00d4ff" />
                         </div>
                     </motion.div>
                 )}
 
-                {/* Actions - Full Width */}
-                <div style={{ display: 'flex', gap: '12px' }}>
-                    <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={handleDeploy}
-                        disabled={status === 'deploying'}
-                        style={{
-                            flex: 1,
-                            padding: '14px 24px',
-                            background: status === 'active' ? '#10b981' : 'linear-gradient(135deg, #00d4ff, #6366f1)',
-                            border: 'none',
-                            borderRadius: '10px',
-                            color: '#fff',
-                            fontWeight: '600',
-                            fontSize: '14px',
-                            cursor: status === 'deploying' ? 'not-allowed' : 'pointer',
-                            opacity: status === 'deploying' ? 0.7 : 1,
+                {/* Bottom Row: Logs + Pricing + Actions */}
+                <div style={{ display: 'grid', gridTemplateColumns: status === 'active' ? '1fr' : '1.5fr 1fr', gap: '24px' }}>
+                    {/* Terminal Logs */}
+                    <div style={{
+                        background: '#0a0e14',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '12px',
+                        overflow: 'hidden',
+                        height: '280px',
+                        display: 'flex',
+                        flexDirection: 'column'
+                    }}>
+                        <div style={{
+                            padding: '10px 16px',
+                            background: 'rgba(255,255,255,0.03)',
+                            borderBottom: '1px solid rgba(255,255,255,0.1)',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px'
-                        }}
-                    >
-                        {status === 'deploying' ? (
-                            <>Deploying...</>
-                        ) : status === 'active' ? (
-                            <><Check size={18} /> System Active</>
-                        ) : (
-                            <><Rocket size={18} /> Deploy System</>
-                        )}
-                    </motion.button>
+                            gap: '8px',
+                            fontSize: '13px',
+                            color: '#94a3b8'
+                        }}>
+                            <Terminal size={14} />
+                            System Log {status === 'active' && '— Tailing /var/log/syslog'}
+                        </div>
+                        <div style={{
+                            padding: '12px 16px',
+                            fontSize: '11px',
+                            fontFamily: 'Share Tech Mono, monospace',
+                            overflow: 'auto',
+                            flex: 1,
+                            display: 'flex', flexDirection: 'column-reverse' // Auto scrol to bottom trick
+                        }}>
+                            <div> {/* Wrapper for column-reverse */}
+                                {logs.map((log, i) => (
+                                    <div key={i} style={{
+                                        color: log.type === 'success' ? '#10b981' : log.type === 'system' ? '#00d4ff' : '#94a3b8',
+                                        marginBottom: '4px',
+                                        lineHeight: '1.4'
+                                    }}>
+                                        <span style={{ color: '#475569', marginRight: '8px' }}>[{log.timestamp}]</span>
+                                        {log.message}
+                                    </div>
+                                ))}
+                                {logs.length === 0 && <div style={{ color: '#475569' }}>Ready to initialize...</div>}
+                            </div>
+                        </div>
+                    </div>
 
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={copyConfig}
-                        style={{
-                            padding: '14px',
-                            background: 'rgba(255,255,255,0.05)',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            borderRadius: '10px',
-                            color: copied ? '#10b981' : '#94a3b8',
-                            cursor: 'pointer'
-                        }}
-                        title="Copy Configuration"
-                    >
-                        {copied ? <Check size={18} /> : <Copy size={18} />}
-                    </motion.button>
+                    {/* Action Panel (Hidden when active to focus on dashboard) */}
+                    {status !== 'active' && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                            {/* Price Display */}
+                            <motion.div
+                                layout
+                                style={{
+                                    background: 'linear-gradient(135deg, rgba(0,212,255,0.05), rgba(99,102,241,0.05))',
+                                    border: '1px solid rgba(0,212,255,0.2)',
+                                    padding: '24px',
+                                    borderRadius: '12px',
+                                    flex: 1,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <div style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '8px', fontWeight: '500' }}>TOTAL ESTIMATED COST</div>
+                                <motion.div
+                                    key={displayPrice}
+                                    initial={{ scale: 1.1, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    style={{ fontSize: '42px', fontWeight: 'bold', color: '#fff', letterSpacing: '-1px' }}
+                                >
+                                    ${displayPrice.toFixed(2)}
+                                    <span style={{ fontSize: '16px', color: '#94a3b8', fontWeight: '400' }}>/mo</span>
+                                </motion.div>
+                                {billingCycle === 'yearly' && (
+                                    <div style={{ fontSize: '12px', color: '#10b981', marginTop: '4px', background: 'rgba(16, 185, 129, 0.1)', padding: '4px 12px', borderRadius: '20px' }}>
+                                        Running Year Savings: ${(monthlyPrice * 12 * 0.2).toFixed(2)}
+                                    </div>
+                                )}
+                            </motion.div>
+
+                            {/* Deploy Button */}
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={handleDeploy}
+                                disabled={status === 'deploying'}
+                                style={{
+                                    padding: '20px',
+                                    background: 'linear-gradient(135deg, #00d4ff, #6366f1)',
+                                    border: 'none',
+                                    borderRadius: '12px',
+                                    color: '#fff',
+                                    fontWeight: 'bold',
+                                    fontSize: '16px',
+                                    cursor: status === 'deploying' ? 'not-allowed' : 'pointer',
+                                    opacity: status === 'deploying' ? 0.7 : 1,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '12px',
+                                    boxShadow: '0 10px 30px -10px rgba(99, 102, 241, 0.5)'
+                                }}
+                            >
+                                {status === 'deploying' ? (
+                                    <>
+                                        <div className="spinner" style={{ width: '20px', height: '20px', border: '2px solid #fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                                        Initializing...
+                                    </>
+                                ) : (
+                                    <><Rocket size={20} /> DEPLOY SERVER INSTANCE</>
+                                )}
+                            </motion.button>
+                        </div>
+                    )}
                 </div>
             </div>
+
+            {/* Styles for spinner */}
+            <style>{`
+                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            `}</style>
         </div>
     );
 }
 
-// Slider Card Component
+// Helper Components
 function SliderCard({ icon, label, value, unit, min, max, step, color, price, onChange }) {
     const percentage = ((value - min) / (max - min)) * 100;
 
@@ -537,22 +663,21 @@ function SliderCard({ icon, label, value, unit, min, max, step, color, price, on
     );
 }
 
-// Metric Bar Component
-function MetricBar({ label, value, color, icon }) {
+// Metric Gauge Component
+function MetricGauge({ label, value, max = 100, unit = '%', color }) {
     return (
-        <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>
-                {icon}
-                {label}
+        <div style={{ background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '12px' }}>
+            <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '8px' }}>{label}</div>
+            <div style={{ display: 'flex', alignItems: 'end', gap: '4px', marginBottom: '8px' }}>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: color, lineHeight: 1 }}>{value.toFixed(0)}</div>
+                <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '2px' }}>{unit}</div>
             </div>
             <div style={{ height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
                 <motion.div
                     style={{ height: '100%', background: color, borderRadius: '2px' }}
-                    animate={{ width: `${value}%` }}
-                    transition={{ duration: 0.5 }}
+                    animate={{ width: `${(value / max) * 100}%` }}
                 />
             </div>
-            <div style={{ fontSize: '11px', color, marginTop: '2px' }}>{value.toFixed(0)}%</div>
         </div>
     );
 }
