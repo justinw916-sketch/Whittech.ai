@@ -230,9 +230,9 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
                 ))}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                {/* Left Column - Sliders */}
-                <div style={{ display: 'grid', gap: '20px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                {/* Sliders Row */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
                     {/* CPU Slider */}
                     <SliderCard
                         icon={<Cpu size={18} />}
@@ -274,7 +274,10 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
                         price={config.storage * PRICING.storage}
                         onChange={(v) => handleUpdate('storage', v)}
                     />
+                </div>
 
+                {/* Bottom Row - Price & Terminal */}
+                <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '20px' }}>
                     {/* Price Display */}
                     <motion.div
                         layout
@@ -283,7 +286,10 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
                             border: '1px solid rgba(0,212,255,0.3)',
                             padding: '20px',
                             borderRadius: '12px',
-                            textAlign: 'center'
+                            textAlign: 'center',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center'
                         }}
                     >
                         <div style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '8px' }}>Estimated Cost</div>
@@ -302,18 +308,14 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
                             </div>
                         )}
                     </motion.div>
-                </div>
 
-                {/* Right Column - Terminal & Status */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                     {/* Terminal Logs */}
                     <div style={{
                         background: '#0a0e14',
                         border: '1px solid rgba(255,255,255,0.1)',
                         borderRadius: '12px',
                         overflow: 'hidden',
-                        flex: 1,
-                        minHeight: '200px',
+                        minHeight: '180px',
                         display: 'flex',
                         flexDirection: 'column'
                     }}>
@@ -352,115 +354,115 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
                             )}
                         </div>
                     </div>
+                </div>
 
-                    {/* Deployment Progress */}
-                    {status === 'deploying' && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            style={{
-                                background: 'rgba(255,255,255,0.03)',
-                                padding: '16px',
-                                borderRadius: '12px'
-                            }}
-                        >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
-                                <span style={{ color: '#f59e0b' }}>{DEPLOY_STAGES[deployStage]?.name || 'Complete'}</span>
-                                <span style={{ color: '#94a3b8' }}>{Math.round(deployProgress)}%</span>
-                            </div>
-                            <div style={{ height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
-                                <motion.div
-                                    style={{
-                                        height: '100%',
-                                        background: 'linear-gradient(90deg, #00d4ff, #6366f1)',
-                                        borderRadius: '3px'
-                                    }}
-                                    animate={{ width: `${deployProgress}%` }}
-                                />
-                            </div>
-                        </motion.div>
-                    )}
+                {/* Deployment Progress - Full Width */}
+                {status === 'deploying' && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        style={{
+                            background: 'rgba(255,255,255,0.03)',
+                            padding: '16px',
+                            borderRadius: '12px'
+                        }}
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
+                            <span style={{ color: '#f59e0b' }}>{DEPLOY_STAGES[deployStage]?.name || 'Complete'}</span>
+                            <span style={{ color: '#94a3b8' }}>{Math.round(deployProgress)}%</span>
+                        </div>
+                        <div style={{ height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
+                            <motion.div
+                                style={{
+                                    height: '100%',
+                                    background: 'linear-gradient(90deg, #00d4ff, #6366f1)',
+                                    borderRadius: '3px'
+                                }}
+                                animate={{ width: `${deployProgress}%` }}
+                            />
+                        </div>
+                    </motion.div>
+                )}
 
-                    {/* Live Metrics (when active) */}
-                    {status === 'active' && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            style={{
-                                background: 'rgba(16, 185, 129, 0.1)',
-                                border: '1px solid rgba(16, 185, 129, 0.3)',
-                                padding: '16px',
-                                borderRadius: '12px'
-                            }}
-                        >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10b981' }}>
-                                    <Activity size={16} />
-                                    <span style={{ fontWeight: '600' }}>System Active</span>
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#94a3b8' }}>
-                                    <Clock size={14} />
-                                    {formatUptime(uptime)}
-                                </div>
+                {/* Live Metrics - Full Width (when active) */}
+                {status === 'active' && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        style={{
+                            background: 'rgba(16, 185, 129, 0.1)',
+                            border: '1px solid rgba(16, 185, 129, 0.3)',
+                            padding: '16px',
+                            borderRadius: '12px'
+                        }}
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10b981' }}>
+                                <Activity size={16} />
+                                <span style={{ fontWeight: '600' }}>System Active</span>
                             </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
-                                <MetricBar label="CPU" value={metrics.cpu} color="#6366f1" />
-                                <MetricBar label="RAM" value={metrics.ram} color="#10b981" />
-                                <MetricBar label="Network" value={metrics.network} color="#00d4ff" icon={<Wifi size={12} />} />
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#94a3b8' }}>
+                                <Clock size={14} />
+                                {formatUptime(uptime)}
                             </div>
-                        </motion.div>
-                    )}
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                            <MetricBar label="CPU" value={metrics.cpu} color="#6366f1" />
+                            <MetricBar label="RAM" value={metrics.ram} color="#10b981" />
+                            <MetricBar label="Network" value={metrics.network} color="#00d4ff" icon={<Wifi size={12} />} />
+                        </div>
+                    </motion.div>
+                )}
 
-                    {/* Actions */}
-                    <div style={{ display: 'flex', gap: '12px' }}>
-                        <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={handleDeploy}
-                            disabled={status === 'deploying'}
-                            style={{
-                                flex: 1,
-                                padding: '14px 24px',
-                                background: status === 'active' ? '#10b981' : 'linear-gradient(135deg, #00d4ff, #6366f1)',
-                                border: 'none',
-                                borderRadius: '10px',
-                                color: '#fff',
-                                fontWeight: '600',
-                                fontSize: '14px',
-                                cursor: status === 'deploying' ? 'not-allowed' : 'pointer',
-                                opacity: status === 'deploying' ? 0.7 : 1,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '8px'
-                            }}
-                        >
-                            {status === 'deploying' ? (
-                                <>Deploying...</>
-                            ) : status === 'active' ? (
-                                <><Check size={18} /> System Active</>
-                            ) : (
-                                <><Rocket size={18} /> Deploy System</>
-                            )}
-                        </motion.button>
+                {/* Actions - Full Width */}
+                <div style={{ display: 'flex', gap: '12px' }}>
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={handleDeploy}
+                        disabled={status === 'deploying'}
+                        style={{
+                            flex: 1,
+                            padding: '14px 24px',
+                            background: status === 'active' ? '#10b981' : 'linear-gradient(135deg, #00d4ff, #6366f1)',
+                            border: 'none',
+                            borderRadius: '10px',
+                            color: '#fff',
+                            fontWeight: '600',
+                            fontSize: '14px',
+                            cursor: status === 'deploying' ? 'not-allowed' : 'pointer',
+                            opacity: status === 'deploying' ? 0.7 : 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px'
+                        }}
+                    >
+                        {status === 'deploying' ? (
+                            <>Deploying...</>
+                        ) : status === 'active' ? (
+                            <><Check size={18} /> System Active</>
+                        ) : (
+                            <><Rocket size={18} /> Deploy System</>
+                        )}
+                    </motion.button>
 
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={copyConfig}
-                            style={{
-                                padding: '14px',
-                                background: 'rgba(255,255,255,0.05)',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                borderRadius: '10px',
-                                color: copied ? '#10b981' : '#94a3b8',
-                                cursor: 'pointer'
-                            }}
-                            title="Copy Configuration"
-                        >
-                            {copied ? <Check size={18} /> : <Copy size={18} />}
-                        </motion.button>
-                    </div>
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={copyConfig}
+                        style={{
+                            padding: '14px',
+                            background: 'rgba(255,255,255,0.05)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: '10px',
+                            color: copied ? '#10b981' : '#94a3b8',
+                            cursor: 'pointer'
+                        }}
+                        title="Copy Configuration"
+                    >
+                        {copied ? <Check size={18} /> : <Copy size={18} />}
+                    </motion.button>
                 </div>
             </div>
         </div>
