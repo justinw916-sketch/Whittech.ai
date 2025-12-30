@@ -20,18 +20,19 @@ const TRADES = [
 ];
 
 const INITIAL_TASKS = [
-    { id: 1, name: 'Site Preparation', trade: 'concrete', startDay: 1, duration: 3, progress: 100 },
-    { id: 2, name: 'Foundation Pour', trade: 'concrete', startDay: 4, duration: 4, progress: 100 },
-    { id: 3, name: 'Structural Framing', trade: 'framing', startDay: 9, duration: 7, progress: 65 },
-    { id: 4, name: 'Rough Plumbing', trade: 'plumbing', startDay: 13, duration: 4, progress: 0 },
-    { id: 5, name: 'Rough Electrical', trade: 'electrical', startDay: 15, duration: 5, progress: 0 },
-    { id: 101, name: 'LV Cabling Rough', trade: 'low_voltage', startDay: 16, duration: 3, progress: 0 },
-    { id: 102, name: 'Fire Alarm Rough', trade: 'fire_alarm', startDay: 17, duration: 3, progress: 0 },
-    { id: 6, name: 'HVAC Ducting', trade: 'hvac', startDay: 16, duration: 4, progress: 0 },
-    { id: 7, name: 'Insulation & Drywall', trade: 'drywall', startDay: 22, duration: 6, progress: 0 },
-    { id: 201, name: 'LV Trim (Cameras)', trade: 'low_voltage', startDay: 29, duration: 2, progress: 0 },
-    { id: 202, name: 'Fire Alarm Trim', trade: 'fire_alarm', startDay: 30, duration: 2, progress: 0 },
-    { id: 203, name: 'Fire Alarm Test', trade: 'fire_alarm', startDay: 32, duration: 1, progress: 0 },
+    { id: 1, name: 'Site Preparation', trade: 'concrete', startDay: 1, duration: 5, progress: 100 },
+    { id: 2, name: 'Foundation Pour', trade: 'concrete', startDay: 4, duration: 6, progress: 100 },
+    { id: 3, name: 'Structural Framing', trade: 'framing', startDay: 8, duration: 10, progress: 45 },
+    { id: 4, name: 'Rough Plumbing', trade: 'plumbing', startDay: 13, duration: 5, progress: 15 },
+    { id: 6, name: 'HVAC Ducting', trade: 'hvac', startDay: 14, duration: 6, progress: 10 },
+    { id: 5, name: 'Rough Electrical', trade: 'electrical', startDay: 16, duration: 5, progress: 0 },
+    { id: 101, name: 'LV Cabling Rough', trade: 'low_voltage', startDay: 19, duration: 3, progress: 0 },
+    { id: 102, name: 'Fire Alarm Rough', trade: 'fire_alarm', startDay: 20, duration: 3, progress: 0 },
+    { id: 7, name: 'Insulation & Drywall', trade: 'drywall', startDay: 24, duration: 8, progress: 0 },
+    { id: 110, name: 'Painting', trade: 'paint', startDay: 31, duration: 5, progress: 0 },
+    { id: 201, name: 'LV Trim (Cameras)', trade: 'low_voltage', startDay: 35, duration: 2, progress: 0 },
+    { id: 202, name: 'Fire Alarm Trim', trade: 'fire_alarm', startDay: 36, duration: 2, progress: 0 },
+    { id: 203, name: 'Fire Alarm Test', trade: 'fire_alarm', startDay: 38, duration: 1, progress: 0 },
 ];
 
 const DAYS_TO_SHOW = 45; // Increased range
