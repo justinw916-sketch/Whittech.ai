@@ -124,16 +124,45 @@ export default function Contact() {
                                             </select>
                                         </div>
 
+                                        <div className="form-row">
+                                            <div className="form-group">
+                                                <label htmlFor="timeline">Timeline / Urgency</label>
+                                                <select id="timeline" name="timeline">
+                                                    <option value="">When do you need this?</option>
+                                                    <option value="asap">ASAP - Urgent</option>
+                                                    <option value="1-2-weeks">Within 1-2 weeks</option>
+                                                    <option value="1-month">Within a month</option>
+                                                    <option value="1-3-months">1-3 months</option>
+                                                    <option value="exploring">Just exploring options</option>
+                                                </select>
+                                            </div>
+                                            <div className="form-group">
+                                                <label htmlFor="teamSize">Team Size</label>
+                                                <select id="teamSize" name="teamSize">
+                                                    <option value="">How big is your team?</option>
+                                                    <option value="solo">Just me</option>
+                                                    <option value="2-5">2-5 people</option>
+                                                    <option value="6-20">6-20 people</option>
+                                                    <option value="21-50">21-50 people</option>
+                                                    <option value="50+">50+ people</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
                                         <div className="form-group">
-                                            <label htmlFor="budget">Budget Range</label>
-                                            <select id="budget" name="budget">
-                                                <option value="">Select a range (optional)...</option>
-                                                <option value="under-2k">Under $2,000</option>
-                                                <option value="2k-5k">$2,000 - $5,000</option>
-                                                <option value="5k-10k">$5,000 - $10,000</option>
-                                                <option value="10k-25k">$10,000 - $25,000</option>
-                                                <option value="over-25k">$25,000+</option>
-                                                <option value="not-sure">Not sure yet</option>
+                                            <label htmlFor="currentTools">Current Tools / Systems</label>
+                                            <input type="text" id="currentTools" name="currentTools" placeholder="e.g. Excel, QuickBooks, pen & paper, custom software..." />
+                                        </div>
+
+                                        <div className="form-group">
+                                            <label htmlFor="referralSource">How did you hear about us?</label>
+                                            <select id="referralSource" name="referralSource">
+                                                <option value="">Select an option...</option>
+                                                <option value="google">Google Search</option>
+                                                <option value="linkedin">LinkedIn</option>
+                                                <option value="referral">Referral / Word of Mouth</option>
+                                                <option value="social">Social Media</option>
+                                                <option value="other">Other</option>
                                             </select>
                                         </div>
 
