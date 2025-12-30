@@ -47,7 +47,11 @@ export default function ConstructionSchedule({ onStatusChange }) {
     const [editData, setEditData] = useState({});
 
     // New task form state
-    const [newTask, setNewTask] = useState({ name: '', trade: 'concrete', startDay: 1, duration: 3 });
+    const [newTask, setNewTask] = useState({
+        name: '', trade: 'concrete', startDay: 1, duration: 3,
+        company: '', isCritical: false,
+        contact: { name: '', email: '', phone: '' }
+    });
 
     const days = Array.from({ length: DAYS_TO_SHOW }, (_, i) => {
         const d = new Date();
@@ -82,11 +86,13 @@ export default function ConstructionSchedule({ onStatusChange }) {
             ...newTask,
             id,
             progress: 0,
-            isCritical: false,
-            company: 'Unassigned',
-            contact: { name: '', email: '', phone: '' }
+            // company/contact/isCritical are already in newTask
         }]);
-        setNewTask({ name: '', trade: 'concrete', startDay: 1, duration: 3 });
+        setNewTask({
+            name: '', trade: 'concrete', startDay: 1, duration: 3,
+            company: '', isCritical: false,
+            contact: { name: '', email: '', phone: '' }
+        });
         setShowAddModal(false);
     };
 
@@ -228,6 +234,16 @@ export default function ConstructionSchedule({ onStatusChange }) {
                                     <input type="number" placeholder="Start Day" value={newTask.startDay} onChange={e => setNewTask({ ...newTask, startDay: parseInt(e.target.value) || 1 })} style={{ padding: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '14px' }} />
                                     <input type="number" placeholder="Duration" value={newTask.duration} onChange={e => setNewTask({ ...newTask, duration: parseInt(e.target.value) || 1 })} style={{ padding: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '14px' }} />
                                 </div>
+                                <input placeholder="Company Name" value={newTask.company} onChange={e => setNewTask({ ...newTask, company: e.target.value })} style={{ padding: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '14px' }} />
+                                <input placeholder="Contact Name" value={newTask.contact.name} onChange={e => setNewTask({ ...newTask, contact: { ...newTask.contact, name: e.target.value } })} style={{ padding: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '14px' }} />
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                    <input placeholder="Email" value={newTask.contact.email} onChange={e => setNewTask({ ...newTask, contact: { ...newTask.contact, email: e.target.value } })} style={{ padding: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '14px' }} />
+                                    <input placeholder="Phone" value={newTask.contact.phone} onChange={e => setNewTask({ ...newTask, contact: { ...newTask.contact, phone: e.target.value } })} style={{ padding: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', fontSize: '14px' }} />
+                                </div>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#fff', fontSize: '14px', cursor: 'pointer' }}>
+                                    <input type="checkbox" checked={newTask.isCritical} onChange={e => setNewTask({ ...newTask, isCritical: e.target.checked })} style={{ accentColor: '#ef4444' }} />
+                                    Mark as Critical Path Task
+                                </label>
                                 <button onClick={handleAddTask} style={{ padding: '12px', background: 'linear-gradient(135deg, #00d4ff, #6366f1)', border: 'none', borderRadius: '8px', color: '#fff', fontWeight: '600', cursor: 'pointer' }}>Add Task</button>
                             </div>
                         </motion.div>
