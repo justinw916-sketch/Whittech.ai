@@ -2,11 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { Cpu, HardDrive, Database, Zap, Rocket, Check, Copy, Download, Terminal, Activity, Wifi, Clock, Globe, Server, AlertTriangle, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Pricing configuration
-const PRICING = {
-    cpu: 5,      // $5 per vCPU/month
-    ram: 2,      // $2 per GB RAM/month
-    storage: 0.1 // $0.10 per GB storage/month
+// Performance scoring weights
+const PERF_WEIGHTS = {
+    cpu: 500,     // Points per vCPU
+    ram: 100,     // Points per GB RAM
+    storage: 2    // Points per GB storage
 };
 
 const PRESETS = [
@@ -47,7 +47,8 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
     const [deployStage, setDeployStage] = useState(0);
     const [deployProgress, setDeployProgress] = useState(0);
     const [logs, setLogs] = useState([]);
-    const [billingCycle, setBillingCycle] = useState('monthly');
+    // Performance score calculation
+    const performanceScore = (config.cpu * PERF_WEIGHTS.cpu) + (config.ram * PERF_WEIGHTS.ram) + (config.storage * PERF_WEIGHTS.storage);
     const [copied, setCopied] = useState(false);
     const [uptime, setUptime] = useState(0);
     const [metrics, setMetrics] = useState({ cpu: 0, ram: 0, network: 0 });
@@ -55,10 +56,7 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
     // Calculate capacity
     const estimatedVisitors = Math.floor((config.cpu * 5000) + (config.ram * 2000));
 
-    // Calculate pricing
-    const monthlyPrice = (config.cpu * PRICING.cpu) + (config.ram * PRICING.ram) + (config.storage * PRICING.storage);
-    const yearlyPrice = monthlyPrice * 12 * 0.8; // 20% discount
-    const displayPrice = billingCycle === 'monthly' ? monthlyPrice : yearlyPrice / 12;
+
 
     // Add log entry
     const addLog = useCallback((message, type = 'info') => {
@@ -179,42 +177,6 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
                         Configure your virtual environment • Press 1/2/3 for presets
                     </p>
                 </div>
-
-                {/* Billing Toggle */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.05)', padding: '8px 16px', borderRadius: '50px' }}>
-                    <button
-                        onClick={() => setBillingCycle('monthly')}
-                        style={{
-                            background: billingCycle === 'monthly' ? '#00d4ff' : 'transparent',
-                            color: billingCycle === 'monthly' ? '#000' : '#94a3b8',
-                            border: 'none',
-                            padding: '6px 16px',
-                            borderRadius: '20px',
-                            cursor: 'pointer',
-                            fontWeight: '600',
-                            fontSize: '13px',
-                            transition: 'all 0.2s'
-                        }}
-                    >
-                        Monthly
-                    </button>
-                    <button
-                        onClick={() => setBillingCycle('yearly')}
-                        style={{
-                            background: billingCycle === 'yearly' ? '#00d4ff' : 'transparent',
-                            color: billingCycle === 'yearly' ? '#000' : '#94a3b8',
-                            border: 'none',
-                            padding: '6px 16px',
-                            borderRadius: '20px',
-                            cursor: 'pointer',
-                            fontWeight: '600',
-                            fontSize: '13px',
-                            transition: 'all 0.2s'
-                        }}
-                    >
-                        Yearly <span style={{ fontSize: '11px', opacity: 0.8 }}>(-20%)</span>
-                    </button>
-                </div>
             </div>
 
             {/* Config Grid */}
@@ -330,7 +292,7 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
                                 <div style={{ textAlign: 'left' }}>
                                     <div style={{ fontWeight: '600', fontSize: '14px' }}>{preset.name}</div>
                                     <div style={{ fontSize: '11px', color: '#94a3b8' }}>
-                                        ${(preset.cpu * PRICING.cpu + preset.ram * PRICING.ram + preset.storage * PRICING.storage).toFixed(0)}/mo
+                                        {preset.cpu} vCPU • {preset.ram}GB RAM
                                     </div>
                                 </div>
                             </motion.button>
@@ -345,7 +307,6 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
                             unit="Cores"
                             min={1} max={32} step={1}
                             color="#6366f1"
-                            price={config.cpu * PRICING.cpu}
                             onChange={(v) => handleUpdate('cpu', v)}
                         />
                         <SliderCard
@@ -355,7 +316,6 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
                             unit="GB"
                             min={1} max={128} step={1}
                             color="#10b981"
-                            price={config.ram * PRICING.ram}
                             onChange={(v) => handleUpdate('ram', v)}
                         />
                         <SliderCard
@@ -365,7 +325,6 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
                             unit="GB"
                             min={10} max={2000} step={10}
                             color="#f59e0b"
-                            price={config.storage * PRICING.storage}
                             onChange={(v) => handleUpdate('storage', v)}
                         />
                     </div>
@@ -518,7 +477,7 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
                     {/* Action Panel (Hidden when active to focus on dashboard) */}
                     {status !== 'active' && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            {/* Price Display */}
+                            {/* Performance Score Display */}
                             <motion.div
                                 layout
                                 style={{
@@ -533,21 +492,19 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
                                     alignItems: 'center'
                                 }}
                             >
-                                <div style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '8px', fontWeight: '500' }}>TOTAL ESTIMATED COST</div>
+                                <div style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '8px', fontWeight: '500' }}>COMPUTE POWER SCORE</div>
                                 <motion.div
-                                    key={displayPrice}
+                                    key={performanceScore}
                                     initial={{ scale: 1.1, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
-                                    style={{ fontSize: '42px', fontWeight: 'bold', color: '#fff', letterSpacing: '-1px' }}
+                                    style={{ fontSize: '42px', fontWeight: 'bold', color: '#00d4ff', letterSpacing: '-1px' }}
                                 >
-                                    ${displayPrice.toFixed(2)}
-                                    <span style={{ fontSize: '16px', color: '#94a3b8', fontWeight: '400' }}>/mo</span>
+                                    {performanceScore.toLocaleString()}
+                                    <span style={{ fontSize: '16px', color: '#94a3b8', fontWeight: '400' }}> pts</span>
                                 </motion.div>
-                                {billingCycle === 'yearly' && (
-                                    <div style={{ fontSize: '12px', color: '#10b981', marginTop: '4px', background: 'rgba(16, 185, 129, 0.1)', padding: '4px 12px', borderRadius: '20px' }}>
-                                        Running Year Savings: ${(monthlyPrice * 12 * 0.2).toFixed(2)}
-                                    </div>
-                                )}
+                                <div style={{ fontSize: '12px', color: '#6366f1', marginTop: '4px', background: 'rgba(99, 102, 241, 0.1)', padding: '4px 12px', borderRadius: '20px' }}>
+                                    {performanceScore < 3000 ? 'Entry Level' : performanceScore < 8000 ? 'Professional Grade' : 'Enterprise Class'}
+                                </div>
                             </motion.div>
 
                             {/* Deploy Button */}
@@ -596,7 +553,7 @@ export default function ResourceConfigurator({ onLog, onStatusChange }) {
 }
 
 // Helper Components
-function SliderCard({ icon, label, value, unit, min, max, step, color, price, onChange }) {
+function SliderCard({ icon, label, value, unit, min, max, step, color, onChange }) {
     const percentage = ((value - min) / (max - min)) * 100;
 
     return (
@@ -656,7 +613,6 @@ function SliderCard({ icon, label, value, unit, min, max, step, color, price, on
 
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#64748b' }}>
                 <span>{min} {unit}</span>
-                <span style={{ color: '#94a3b8' }}>${price.toFixed(2)}/mo</span>
                 <span>{max} {unit}</span>
             </div>
         </div>
