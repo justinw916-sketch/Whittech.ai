@@ -1,23 +1,20 @@
 import { useState, useEffect } from 'react';
 import { Wifi, WifiOff, X, Maximize2, Minimize2, Terminal } from 'lucide-react';
 
-export default function AppContainer({ title, onClose, children }) {
+export default function AppContainer({ title, onClose, children, externalStatus }) {
     const [status, setStatus] = useState('connecting');
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [logs, setLogs] = useState([]);
 
+    // Use external status if provided (from ResourceConfigurator deployment)
+    const displayStatus = externalStatus === 'active' ? 'connected' : (externalStatus === 'deploying' ? 'deploying' : status);
+
     useEffect(() => {
-        // Check backend health
-        fetch('/api/status')
-            .then(res => res.json())
-            .then(() => {
-                setStatus('connected');
-                addLog('System connected to backend protocol v1.0');
-            })
-            .catch(() => {
-                setStatus('disconnected');
-                addLog('Connection failed: Backend unreachable');
-            });
+        // Simulate initial connection (always succeed for demo)
+        setTimeout(() => {
+            setStatus('ready');
+            addLog('System initialized - ready for deployment');
+        }, 1000);
     }, []);
 
     const addLog = (msg) => {
@@ -64,9 +61,9 @@ export default function AppContainer({ title, onClose, children }) {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}>
-                        {status === 'connected' ? <Wifi size={14} color="#10b981" /> : <WifiOff size={14} color="#ef4444" />}
-                        <span style={{ color: status === 'connected' ? '#10b981' : '#ef4444' }}>
-                            {status === 'connected' ? 'ONLINE' : 'OFFLINE'}
+                        {displayStatus === 'connected' ? <Wifi size={14} color="#10b981" /> : <WifiOff size={14} color={displayStatus === 'deploying' ? '#f59e0b' : '#ef4444'} />}
+                        <span style={{ color: displayStatus === 'connected' ? '#10b981' : (displayStatus === 'deploying' ? '#f59e0b' : '#ef4444') }}>
+                            {displayStatus === 'connected' ? 'ONLINE' : (displayStatus === 'deploying' ? 'DEPLOYING' : 'OFFLINE')}
                         </span>
                     </div>
                     <div style={{ height: '20px', width: '1px', background: 'rgba(255,255,255,0.1)' }}></div>

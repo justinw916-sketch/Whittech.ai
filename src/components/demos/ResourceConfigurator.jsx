@@ -24,7 +24,7 @@ const DEPLOY_STAGES = [
     { name: 'Finalizing', duration: 600, message: 'Finalizing deployment...' },
 ];
 
-export default function ResourceConfigurator({ onLog }) {
+export default function ResourceConfigurator({ onLog, onStatusChange }) {
     const [config, setConfig] = useState({ cpu: 4, ram: 8, storage: 100 });
     const [status, setStatus] = useState('idle'); // idle, deploying, active
     const [deployStage, setDeployStage] = useState(0);
@@ -63,6 +63,7 @@ export default function ResourceConfigurator({ onLog }) {
         if (status === 'deploying') return;
 
         setStatus('deploying');
+        if (onStatusChange) onStatusChange('deploying');
         setDeployStage(0);
         setDeployProgress(0);
         setLogs([]);
@@ -92,6 +93,7 @@ export default function ResourceConfigurator({ onLog }) {
 
         addLog('✅ Deployment complete! System is now active.', 'success');
         setStatus('active');
+        if (onStatusChange) onStatusChange('active');
         setUptime(0);
     };
 

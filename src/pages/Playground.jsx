@@ -6,6 +6,7 @@ import { Package, Smartphone, Database, Server } from 'lucide-react';
 
 export default function Playground() {
     const [activeApp, setActiveApp] = useState(null);
+    const [deploymentStatus, setDeploymentStatus] = useState('idle');
 
     const apps = [
         {
@@ -51,7 +52,7 @@ export default function Playground() {
             {activeApp ? (
                 <div style={{ animation: 'fadeIn 0.5s ease' }}>
                     <button
-                        onClick={() => setActiveApp(null)}
+                        onClick={() => { setActiveApp(null); setDeploymentStatus('idle'); }}
                         style={{
                             background: 'none', border: 'none', color: '#94a3b8',
                             marginBottom: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
@@ -62,13 +63,12 @@ export default function Playground() {
 
                     <AppContainer
                         title={apps.find(a => a.id === activeApp).name}
-                        onClose={() => setActiveApp(null)}
+                        onClose={() => { setActiveApp(null); setDeploymentStatus('idle'); }}
+                        externalStatus={deploymentStatus}
                     >
                         {(() => {
                             const App = apps.find(a => a.id === activeApp).component;
-                            // Pass a specialized logger to the app if needed, handled by AppContainer in real impl
-                            // Here passing a key to force re-mount on switch is good practice
-                            return <App key={activeApp} />;
+                            return <App key={activeApp} onStatusChange={setDeploymentStatus} />;
                         })()}
                     </AppContainer>
                 </div>
