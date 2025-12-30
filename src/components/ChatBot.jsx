@@ -4,8 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 // Fallback responses for when AI is unavailable
 const fallbackResponses = [
-    "I'm having trouble connecting right now. Please email us at jwhitton@zoho.com or visit our Contact page!",
-    "Hmm, I couldn't process that. You can reach our team directly at jwhitton@zoho.com.",
+    "I'm having trouble connecting right now. Please email us at admin@whittech.ai or visit our Contact page!",
+    "Hmm, I couldn't process that. You can reach our team directly at admin@whittech.ai.",
 ];
 
 const INITIAL_MESSAGE = "Hey there! 👋 I'm the WhitTech.AI assistant, powered by AI. Ask me anything about our custom software services, pricing, timeline, or how we can help your business!";

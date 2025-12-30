@@ -52,7 +52,7 @@ export default function Contact() {
                                     <div className="method-icon">📧</div>
                                     <div className="method-content">
                                         <h3>Email</h3>
-                                        <p><a href="mailto:jwhitton@zoho.com">jwhitton@zoho.com</a></p>
+                                        <p><a href="mailto:admin@whittech.ai">admin@whittech.ai</a></p>
                                     </div>
                                 </div>
                                 <div className="contact-method">
@@ -83,7 +83,7 @@ export default function Contact() {
                                     <p>Fill out the form below and I'll get back to you quickly.</p>
 
                                     <form
-                                        action="https://formsubmit.co/jwhitton@zoho.com"
+                                        action="https://formsubmit.co/admin@whittech.ai"
                                         method="POST"
                                         className="contact-form"
                                         onSubmit={() => setIsSubmitting(true)}
