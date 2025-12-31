@@ -481,12 +481,27 @@ export default function MobileAppPreview({ onStatusChange }) {
 
     if (activeTool) {
         return (
-            <div style={{ padding: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100%' }}>
-                <AnimatePresence mode="wait">
-                    <motion.div key={activeTool} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}>
-                        {renderTool()}
-                    </motion.div>
-                </AnimatePresence>
+            <div style={{ padding: '20px', minHeight: '100%' }}>
+                {/* Back to Tools Button - Outside Phone Frame */}
+                <button
+                    onClick={() => setActiveTool(null)}
+                    style={{
+                        display: 'flex', alignItems: 'center', gap: '8px',
+                        background: 'rgba(0,212,255,0.1)', border: '1px solid rgba(0,212,255,0.3)',
+                        padding: '8px 16px', borderRadius: '8px', color: '#00d4ff',
+                        cursor: 'pointer', fontSize: '13px', fontWeight: '500', marginBottom: '20px'
+                    }}
+                >
+                    <ArrowLeft size={16} /> Back to Tools
+                </button>
+
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <AnimatePresence mode="wait">
+                        <motion.div key={activeTool} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}>
+                            {renderTool()}
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
             </div>
         );
     }
