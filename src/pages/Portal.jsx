@@ -156,6 +156,7 @@ function AdminPortal({ users, setUsers, onLogout }) {
     const [showAddForm, setShowAddForm] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [viewingUser, setViewingUser] = useState(null);
+    const [emailStatus, setEmailStatus] = useState(null);
     const [newUser, setNewUser] = useState({
         username: '', password: '', clientName: '',
         project: getDefaultProject()
@@ -163,13 +164,54 @@ function AdminPortal({ users, setUsers, onLogout }) {
 
     const clientUsers = users.filter(u => u.role === 'client');
 
-    const addUser = () => {
+    const addUser = async () => {
         if (!newUser.username || !newUser.password || !newUser.clientName) return;
         if (users.find(u => u.username === newUser.username)) {
             alert('Username already exists');
             return;
         }
-        setUsers([...users, { ...newUser, role: 'client' }]);
+
+        // Add user to local storage
+        const createdUser = { ...newUser, role: 'client' };
+        setUsers([...users, createdUser]);
+
+        // Send welcome email if contact email is provided
+        const contactEmail = newUser.project?.contactEmail;
+        if (contactEmail) {
+            setEmailStatus('sending');
+            try {
+                const response = await fetch('/api/email/welcome', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: newUser.username,
+                        password: newUser.password,
+                        clientName: newUser.clientName,
+                        projectName: newUser.project?.name,
+                        startDate: newUser.project?.startDate,
+                        estimatedCompletion: newUser.project?.estimatedCompletion,
+                        contactPerson: newUser.project?.contactPerson,
+                        contactEmail: contactEmail,
+                        contactPhone: newUser.project?.contactPhone,
+                    }),
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    setEmailStatus('sent');
+                    setTimeout(() => setEmailStatus(null), 5000);
+                } else {
+                    console.error('Email error:', result);
+                    setEmailStatus('error');
+                    setTimeout(() => setEmailStatus(null), 5000);
+                }
+            } catch (err) {
+                console.error('Failed to send welcome email:', err);
+                setEmailStatus('error');
+                setTimeout(() => setEmailStatus(null), 5000);
+            }
+        }
+
         setNewUser({ username: '', password: '', clientName: '', project: getDefaultProject() });
         setShowAddForm(false);
     };
@@ -187,6 +229,28 @@ function AdminPortal({ users, setUsers, onLogout }) {
 
     return (
         <div className="container" style={{ paddingTop: '120px', paddingBottom: '80px' }}>
+            {/* Email Status Toast */}
+            <AnimatePresence>
+                {emailStatus && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -50 }}
+                        style={{
+                            position: 'fixed', top: '100px', right: '20px', zIndex: 1001,
+                            padding: '16px 24px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px',
+                            background: emailStatus === 'sent' ? 'rgba(16, 185, 129, 0.9)' :
+                                emailStatus === 'error' ? 'rgba(239, 68, 68, 0.9)' : 'rgba(0, 212, 255, 0.9)',
+                            color: '#fff', fontWeight: '500', boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
+                        }}
+                    >
+                        {emailStatus === 'sending' && <><Loader size={18} className="spin" /> Sending welcome email...</>}
+                        {emailStatus === 'sent' && <><CheckCircle size={18} /> Welcome email sent successfully!</>}
+                        {emailStatus === 'error' && <><AlertCircle size={18} /> Failed to send email (user still created)</>}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
                 <div>

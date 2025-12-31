@@ -71,6 +71,11 @@ export default {
             return handleFileRequest(request, env, url);
         }
 
+        // Email API Routes
+        if (url.pathname === '/api/email/welcome') {
+            return handleWelcomeEmail(request, env);
+        }
+
         // Serve static assets for all other routes
         return env.ASSETS.fetch(request);
     }
@@ -256,4 +261,214 @@ async function handleChatRequest(request, env) {
             headers: { 'Content-Type': 'application/json', ...corsHeaders },
         });
     }
+}
+
+// ==================== EMAIL HANDLING ====================
+
+async function handleWelcomeEmail(request, env) {
+    if (request.method !== 'POST') {
+        return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+            status: 405,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        });
+    }
+
+    try {
+        const data = await request.json();
+        const {
+            username, password, clientName, projectName,
+            startDate, estimatedCompletion,
+            contactPerson, contactEmail, contactPhone
+        } = data;
+
+        if (!contactEmail) {
+            return new Response(JSON.stringify({ error: 'Contact email is required' }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json', ...corsHeaders }
+            });
+        }
+
+        // Generate branded HTML email
+        const emailHtml = generateWelcomeEmailHtml({
+            username, password, clientName, projectName,
+            startDate, estimatedCompletion,
+            contactPerson, contactEmail, contactPhone
+        });
+
+        // Send via Resend API
+        const resendResponse = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                from: 'WhitTech.AI <noreply@whittech.ai>',
+                to: [contactEmail],
+                subject: `Welcome to WhitTech.AI - Your Portal Access for ${projectName}`,
+                html: emailHtml,
+            }),
+        });
+
+        const result = await resendResponse.json();
+
+        if (!resendResponse.ok) {
+            console.error('Resend API Error:', result);
+            return new Response(JSON.stringify({
+                error: 'Failed to send email',
+                details: result
+            }), {
+                status: 500,
+                headers: { 'Content-Type': 'application/json', ...corsHeaders }
+            });
+        }
+
+        return new Response(JSON.stringify({
+            success: true,
+            messageId: result.id
+        }), {
+            headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        });
+
+    } catch (error) {
+        console.error('Email Error:', error);
+        return new Response(JSON.stringify({ error: error.message }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        });
+    }
+}
+
+function generateWelcomeEmailHtml(data) {
+    const {
+        username, password, clientName, projectName,
+        startDate, estimatedCompletion,
+        contactPerson, contactEmail, contactPhone
+    } = data;
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; background-color: #0a0e14; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0e14; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background: linear-gradient(135deg, #0d1219 0%, #131a24 100%); border-radius: 20px; border: 1px solid rgba(0, 212, 255, 0.2); overflow: hidden;">
+                    
+                    <!-- Header with Logo -->
+                    <tr>
+                        <td style="padding: 40px 40px 20px; text-align: center; border-bottom: 1px solid rgba(0, 212, 255, 0.1);">
+                            <h1 style="margin: 0; font-size: 28px; font-weight: 700;">
+                                <span style="color: #ffffff;">WHITTECH</span><span style="color: #00d4ff;">.AI</span>
+                            </h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Welcome Message -->
+                    <tr>
+                        <td style="padding: 40px;">
+                            <h2 style="color: #ffffff; font-size: 24px; margin: 0 0 20px; text-align: center;">
+                                Welcome to Your Client Portal! 🎉
+                            </h2>
+                            <p style="color: #94a3b8; font-size: 16px; line-height: 1.6; margin: 0 0 30px;">
+                                Hello <strong style="color: #00d4ff;">${clientName}</strong>,<br><br>
+                                Your client portal account has been created. You can now access your project dashboard to track progress, view documents, and stay updated on your project.
+                            </p>
+                            
+                            <!-- Credentials Box -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background: rgba(0, 212, 255, 0.05); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 12px; margin-bottom: 30px;">
+                                <tr>
+                                    <td style="padding: 25px;">
+                                        <h3 style="color: #00d4ff; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 15px;">
+                                            Your Login Credentials
+                                        </h3>
+                                        <table width="100%" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td style="color: #94a3b8; padding: 8px 0; font-size: 14px;">Username:</td>
+                                                <td style="color: #ffffff; padding: 8px 0; font-size: 14px; font-weight: 600;">${username}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: #94a3b8; padding: 8px 0; font-size: 14px;">Password:</td>
+                                                <td style="color: #ffffff; padding: 8px 0; font-size: 14px; font-weight: 600;">${password}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: #94a3b8; padding: 8px 0; font-size: 14px;">Portal URL:</td>
+                                                <td style="padding: 8px 0;"><a href="https://whittech.ai/portal" style="color: #00d4ff; text-decoration: none; font-weight: 600;">whittech.ai/portal</a></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Project Details -->
+                            <h3 style="color: #ffffff; font-size: 16px; margin: 0 0 15px;">
+                                📋 Project Details
+                            </h3>
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+                                <tr>
+                                    <td style="color: #94a3b8; padding: 8px 0; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.05);">Project Name:</td>
+                                    <td style="color: #ffffff; padding: 8px 0; font-size: 14px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);">${projectName || 'TBD'}</td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #94a3b8; padding: 8px 0; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.05);">Start Date:</td>
+                                    <td style="color: #ffffff; padding: 8px 0; font-size: 14px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05);">${startDate || 'TBD'}</td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #94a3b8; padding: 8px 0; font-size: 14px;">Est. Completion:</td>
+                                    <td style="color: #ffffff; padding: 8px 0; font-size: 14px; text-align: right;">${estimatedCompletion || 'TBD'}</td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Project Manager -->
+                            ${contactPerson ? `
+                            <h3 style="color: #ffffff; font-size: 16px; margin: 0 0 15px;">
+                                👤 Your Project Manager
+                            </h3>
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background: rgba(168, 85, 247, 0.05); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 12px; margin-bottom: 30px;">
+                                <tr>
+                                    <td style="padding: 20px;">
+                                        <p style="color: #ffffff; font-size: 16px; margin: 0 0 8px; font-weight: 600;">${contactPerson}</p>
+                                        ${contactEmail ? `<p style="color: #94a3b8; font-size: 14px; margin: 0 0 4px;">📧 ${contactEmail}</p>` : ''}
+                                        ${contactPhone ? `<p style="color: #94a3b8; font-size: 14px; margin: 0;">📞 ${contactPhone}</p>` : ''}
+                                    </td>
+                                </tr>
+                            </table>
+                            ` : ''}
+                            
+                            <!-- CTA Button -->
+                            <table width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="center" style="padding: 20px 0;">
+                                        <a href="https://whittech.ai/portal" style="display: inline-block; background: linear-gradient(135deg, #00d4ff, #6366f1); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 10px; font-size: 16px; font-weight: 600;">
+                                            Access Your Portal →
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 30px 40px; border-top: 1px solid rgba(255,255,255,0.05); text-align: center;">
+                            <p style="color: #64748b; font-size: 12px; margin: 0 0 10px;">
+                                This email contains your login credentials. Please keep it secure.
+                            </p>
+                            <p style="color: #64748b; font-size: 12px; margin: 0;">
+                                © 2025 WhitTech.AI | Custom Software Solutions
+                            </p>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+    `.trim();
 }
