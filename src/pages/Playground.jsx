@@ -11,12 +11,12 @@ export default function Playground() {
 
     const apps = [
         {
-            id: 'resources',
-            name: 'Resource Planner',
-            category: 'DevOps Tool',
-            description: 'Configure and provision virtual server instances with real-time validated simulation.',
-            icon: <Server size={32} color="#00d4ff" />,
-            component: ResourceConfigurator
+            id: 'mobile-preview',
+            name: 'Mobile App Preview',
+            category: 'Construction Tools',
+            description: '5 fully interactive field tools: Reports, Punch Lists, Safety, Materials, Time Cards.',
+            icon: <Smartphone size={32} color="#10b981" />,
+            component: MobileAppPreview
         },
         {
             id: 'schedule',
@@ -27,12 +27,12 @@ export default function Playground() {
             component: ConstructionSchedule
         },
         {
-            id: 'mobile-preview',
-            name: 'Mobile App Preview',
-            category: 'Construction Tools',
-            description: '5 fully interactive field tools: Reports, Punch Lists, Safety, Materials, Time Cards.',
-            icon: <Smartphone size={32} color="#10b981" />,
-            component: MobileAppPreview
+            id: 'resources',
+            name: 'Resource Planner',
+            category: 'DevOps Tool',
+            description: 'Configure and provision virtual server instances with real-time validated simulation.',
+            icon: <Server size={32} color="#00d4ff" />,
+            component: ResourceConfigurator
         }
     ];
 
