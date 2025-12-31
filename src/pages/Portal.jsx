@@ -268,182 +268,181 @@ function AdminPortal({ currentUser, onLogout }) {
                 setNewUser({ username: '', password: '', clientName: '', project: getDefaultProject() });
                 setShowAddForm(false);
             } else {
-                alert(result.error || 'Failed to create user');
+                alert(`Failed to create user: ${result.error || 'Unknown error'}`);
             }
         } catch (err) {
             console.error('Add user error:', err);
-            alert('Failed to create user');
+            alert(`Failed to create user (System Error): ${err.message}`);
         }
     };
 
-}
+
+
+    const deleteUser = async (userId) => {
+        if (confirm(`Delete this client? This cannot be undone.`)) {
+            try {
+                await deleteUserRequest(userId);
+                await loadUsers();
+            } catch (err) {
+                console.error('Failed to delete user:', err);
+                alert('Failed to delete user');
+            }
+        }
     };
 
-const deleteUser = async (userId) => {
-    if (confirm(`Delete this client? This cannot be undone.`)) {
+    const saveUserEdit = async (updatedUser) => {
         try {
-            await deleteUserRequest(userId);
+            // Map flat user structure back to API structure
+            // In listUsers, clientData is nested, but editingUser might have flattened it?
+            // Let's check how EditClientModal works. It likely edits 'project' prop.
+
+            const updatePayload = {
+                userId: updatedUser.id,
+                clientData: updatedUser.clientData || updatedUser.project // Assuming project data is stored in clientData
+            };
+
+            // We might need to update username if changed, but usually that's fixed.
+            // Let's assume we update clientData.
+
+            await updateUser(updatePayload);
             await loadUsers();
+            setEditingUser(null);
         } catch (err) {
-            console.error('Failed to delete user:', err);
-            alert('Failed to delete user');
+            console.error('Failed to update user:', err);
+            alert('Failed to update user');
         }
-    }
-};
+    };
 
-const saveUserEdit = async (updatedUser) => {
-    try {
-        // Map flat user structure back to API structure
-        // In listUsers, clientData is nested, but editingUser might have flattened it?
-        // Let's check how EditClientModal works. It likely edits 'project' prop.
-
-        const updatePayload = {
-            userId: updatedUser.id,
-            clientData: updatedUser.clientData || updatedUser.project // Assuming project data is stored in clientData
-        };
-
-        // We might need to update username if changed, but usually that's fixed.
-        // Let's assume we update clientData.
-
-        await updateUser(updatePayload);
-        await loadUsers();
-        setEditingUser(null);
-    } catch (err) {
-        console.error('Failed to update user:', err);
-        alert('Failed to update user');
-    }
-};
-
-return (
-    <div className="container" style={{ paddingTop: '120px', paddingBottom: '80px' }}>
-        {/* Email Status Toast */}
-        <AnimatePresence>
-            {emailStatus && (
-                <motion.div
-                    initial={{ opacity: 0, y: -50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -50 }}
-                    style={{
-                        position: 'fixed', top: '100px', right: '20px', zIndex: 1001,
-                        padding: '16px 24px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px',
-                        background: emailStatus === 'sent' ? 'rgba(16, 185, 129, 0.9)' :
-                            emailStatus === 'queued' ? 'rgba(245, 158, 11, 0.9)' :
-                                emailStatus === 'error' ? 'rgba(239, 68, 68, 0.9)' : 'rgba(0, 212, 255, 0.9)',
-                        color: '#fff', fontWeight: '500', boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
-                    }}
-                >
-                    {emailStatus === 'sending' && <><Loader size={18} className="spin" /> Sending welcome email...</>}
-                    {emailStatus === 'sent' && <><CheckCircle size={18} /> Welcome email sent successfully!</>}
-                    {emailStatus === 'queued' && <><CheckCircle size={18} /> Account created! Copy credentials to send manually.</>}
-                    {emailStatus === 'error' && <><AlertCircle size={18} /> Failed to send email (user still created)</>}
-                </motion.div>
-            )}
-        </AnimatePresence>
-
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
-            <div>
-                <h1 style={{ fontSize: '32px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <Shield size={28} color="#a855f7" /> Admin <span style={{ color: '#a855f7' }}>Portal</span>
-                </h1>
-                <p style={{ color: '#94a3b8' }}>Manage client accounts and projects</p>
-            </div>
-            <div style={{ display: 'flex', gap: '12px' }}>
-                <button
-                    className="btn btn-secondary"
-                    onClick={() => setShowAdminSettings(true)}
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-                >
-                    <Settings size={16} /> Admin Settings
-                </button>
-                <button className="btn btn-secondary" onClick={onLogout} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <LogOut size={16} /> Sign Out
-                </button>
-            </div>
-        </div>
-
-        {/* User Management */}
-        <div style={{ background: 'linear-gradient(135deg, #0d1219 0%, rgba(13, 18, 25, 0.7) 100%)', border: '1px solid rgba(168, 85, 247, 0.2)', borderRadius: '16px', padding: '32px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><Users size={20} color="#a855f7" /> Client Accounts ({clientUsers.length})</h3>
-                <button onClick={() => setShowAddForm(!showAddForm)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(135deg, #a855f7, #6366f1)', border: 'none', padding: '10px 20px', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: '600' }}>
-                    <Plus size={16} /> Add Client
-                </button>
-            </div>
-
-            {/* Add User Form */}
+    return (
+        <div className="container" style={{ paddingTop: '120px', paddingBottom: '80px' }}>
+            {/* Email Status Toast */}
             <AnimatePresence>
-                {showAddForm && (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                        style={{ background: 'rgba(168, 85, 247, 0.1)', border: '1px solid rgba(168, 85, 247, 0.3)', borderRadius: '12px', padding: '24px', marginBottom: '24px', overflow: 'hidden' }}>
-                        <h4 style={{ marginBottom: '20px', color: '#a855f7' }}>New Client Account</h4>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-                            <InputField label="Username" value={newUser.username} onChange={v => setNewUser({ ...newUser, username: v })} />
-                            <InputField label="Password" type="password" value={newUser.password} onChange={v => setNewUser({ ...newUser, password: v })} />
-                            <InputField label="Client/Company Name" value={newUser.clientName} onChange={v => setNewUser({ ...newUser, clientName: v })} />
-                            <InputField label="Project Name" value={newUser.project.name} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, name: v } })} />
-                            <InputField label="Start Date" type="date" value={newUser.project.startDate} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, startDate: v } })} />
-                            <InputField label="Est. Completion" type="date" value={newUser.project.estimatedCompletion} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, estimatedCompletion: v } })} />
-                            <InputField label="Contact Person" value={newUser.project.contactPerson} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, contactPerson: v } })} />
-                            <InputField label="Contact Email" value={newUser.project.contactEmail} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, contactEmail: v } })} />
-                            <InputField label="Contact Phone" value={newUser.project.contactPhone} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, contactPhone: v } })} />
-                        </div>
-                        <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
-                            <button onClick={addUser} style={{ padding: '10px 24px', background: '#10b981', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: '600' }}>Create Account</button>
-                            <button onClick={() => setShowAddForm(false)} style={{ padding: '10px 24px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer' }}>Cancel</button>
-                        </div>
+                {emailStatus && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -50 }}
+                        style={{
+                            position: 'fixed', top: '100px', right: '20px', zIndex: 1001,
+                            padding: '16px 24px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px',
+                            background: emailStatus === 'sent' ? 'rgba(16, 185, 129, 0.9)' :
+                                emailStatus === 'queued' ? 'rgba(245, 158, 11, 0.9)' :
+                                    emailStatus === 'error' ? 'rgba(239, 68, 68, 0.9)' : 'rgba(0, 212, 255, 0.9)',
+                            color: '#fff', fontWeight: '500', boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
+                        }}
+                    >
+                        {emailStatus === 'sending' && <><Loader size={18} className="spin" /> Sending welcome email...</>}
+                        {emailStatus === 'sent' && <><CheckCircle size={18} /> Welcome email sent successfully!</>}
+                        {emailStatus === 'queued' && <><CheckCircle size={18} /> Account created! Copy credentials to send manually.</>}
+                        {emailStatus === 'error' && <><AlertCircle size={18} /> Failed to send email (user still created)</>}
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* Users Table */}
-            {clientUsers.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '60px', color: '#64748b' }}>
-                    <Users size={48} style={{ marginBottom: '16px', opacity: 0.5 }} />
-                    <p>No client accounts yet. Click "Add Client" to create one.</p>
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
+                <div>
+                    <h1 style={{ fontSize: '32px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <Shield size={28} color="#a855f7" /> Admin <span style={{ color: '#a855f7' }}>Portal</span>
+                    </h1>
+                    <p style={{ color: '#94a3b8' }}>Manage client accounts and projects</p>
                 </div>
-            ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {clientUsers.map(user => (
-                        <div key={user.id} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                <div style={{ width: '48px', height: '48px', background: 'rgba(0,212,255,0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <Building size={20} color="#00d4ff" />
-                                </div>
-                                <div>
-                                    <div style={{ fontWeight: '600', fontSize: '16px' }}>{user.displayName || user.username}</div>
-                                    <div style={{ fontSize: '13px', color: '#94a3b8' }}>@{user.username} • {user.clientData?.name || 'No project'}</div>
-                                </div>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <StatusBadge status={user.clientData?.status || 'planning'} />
-                                <button onClick={() => setViewingUser(user)} style={{ background: 'rgba(0,212,255,0.1)', border: 'none', padding: '8px 12px', borderRadius: '6px', color: '#00d4ff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}><Eye size={14} /> View</button>
-                                <button onClick={() => setEditingUser(user)} style={{ background: 'rgba(168,85,247,0.1)', border: 'none', padding: '8px 12px', borderRadius: '6px', color: '#a855f7', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}><Edit size={14} /> Edit</button>
-                                <button onClick={() => deleteUser(user.id)} style={{ background: 'rgba(239,68,68,0.1)', border: 'none', padding: '8px 12px', borderRadius: '6px', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}><Trash2 size={14} /></button>
-                            </div>
-                        </div>
-                    ))}
+                <div style={{ display: 'flex', gap: '12px' }}>
+                    <button
+                        className="btn btn-secondary"
+                        onClick={() => setShowAdminSettings(true)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                    >
+                        <Settings size={16} /> Admin Settings
+                    </button>
+                    <button className="btn btn-secondary" onClick={onLogout} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <LogOut size={16} /> Sign Out
+                    </button>
                 </div>
-            )}
-        </div>
+            </div>
 
-        {/* Edit Modal */}
-        <AnimatePresence>
-            {editingUser && <EditClientModal user={editingUser} onSave={saveUserEdit} onClose={() => setEditingUser(null)} onResendEmail={() => sendWelcomeEmail(editingUser)} />}
-            {viewingUser && <ViewClientModal user={viewingUser} onClose={() => setViewingUser(null)} />}
-            {showAdminSettings && (
-                <AdminSettingsModal
-                    currentUser={currentUser}
-                    adminData={adminData}
-                    setAdminData={setAdminData}
-                    saving={adminSaving}
-                    setSaving={setAdminSaving}
-                    onClose={() => setShowAdminSettings(false)}
-                />
-            )}
-        </AnimatePresence>
-    </div>
-);
+            {/* User Management */}
+            <div style={{ background: 'linear-gradient(135deg, #0d1219 0%, rgba(13, 18, 25, 0.7) 100%)', border: '1px solid rgba(168, 85, 247, 0.2)', borderRadius: '16px', padding: '32px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><Users size={20} color="#a855f7" /> Client Accounts ({clientUsers.length})</h3>
+                    <button onClick={() => setShowAddForm(!showAddForm)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(135deg, #a855f7, #6366f1)', border: 'none', padding: '10px 20px', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: '600' }}>
+                        <Plus size={16} /> Add Client
+                    </button>
+                </div>
+
+                {/* Add User Form */}
+                <AnimatePresence>
+                    {showAddForm && (
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                            style={{ background: 'rgba(168, 85, 247, 0.1)', border: '1px solid rgba(168, 85, 247, 0.3)', borderRadius: '12px', padding: '24px', marginBottom: '24px', overflow: 'hidden' }}>
+                            <h4 style={{ marginBottom: '20px', color: '#a855f7' }}>New Client Account</h4>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+                                <InputField label="Username" value={newUser.username} onChange={v => setNewUser({ ...newUser, username: v })} />
+                                <InputField label="Password" type="password" value={newUser.password} onChange={v => setNewUser({ ...newUser, password: v })} />
+                                <InputField label="Client/Company Name" value={newUser.clientName} onChange={v => setNewUser({ ...newUser, clientName: v })} />
+                                <InputField label="Project Name" value={newUser.project.name} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, name: v } })} />
+                                <InputField label="Start Date" type="date" value={newUser.project.startDate} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, startDate: v } })} />
+                                <InputField label="Est. Completion" type="date" value={newUser.project.estimatedCompletion} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, estimatedCompletion: v } })} />
+                                <InputField label="Contact Person" value={newUser.project.contactPerson} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, contactPerson: v } })} />
+                                <InputField label="Contact Email" value={newUser.project.contactEmail} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, contactEmail: v } })} />
+                                <InputField label="Contact Phone" value={newUser.project.contactPhone} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, contactPhone: v } })} />
+                            </div>
+                            <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+                                <button onClick={addUser} style={{ padding: '10px 24px', background: '#10b981', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: '600' }}>Create Account</button>
+                                <button onClick={() => setShowAddForm(false)} style={{ padding: '10px 24px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer' }}>Cancel</button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* Users Table */}
+                {clientUsers.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '60px', color: '#64748b' }}>
+                        <Users size={48} style={{ marginBottom: '16px', opacity: 0.5 }} />
+                        <p>No client accounts yet. Click "Add Client" to create one.</p>
+                    </div>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {clientUsers.map(user => (
+                            <div key={user.id} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                    <div style={{ width: '48px', height: '48px', background: 'rgba(0,212,255,0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Building size={20} color="#00d4ff" />
+                                    </div>
+                                    <div>
+                                        <div style={{ fontWeight: '600', fontSize: '16px' }}>{user.displayName || user.username}</div>
+                                        <div style={{ fontSize: '13px', color: '#94a3b8' }}>@{user.username} • {user.clientData?.name || 'No project'}</div>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <StatusBadge status={user.clientData?.status || 'planning'} />
+                                    <button onClick={() => setViewingUser(user)} style={{ background: 'rgba(0,212,255,0.1)', border: 'none', padding: '8px 12px', borderRadius: '6px', color: '#00d4ff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}><Eye size={14} /> View</button>
+                                    <button onClick={() => setEditingUser(user)} style={{ background: 'rgba(168,85,247,0.1)', border: 'none', padding: '8px 12px', borderRadius: '6px', color: '#a855f7', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}><Edit size={14} /> Edit</button>
+                                    <button onClick={() => deleteUser(user.id)} style={{ background: 'rgba(239,68,68,0.1)', border: 'none', padding: '8px 12px', borderRadius: '6px', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}><Trash2 size={14} /></button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* Edit Modal */}
+            <AnimatePresence>
+                {editingUser && <EditClientModal user={editingUser} onSave={saveUserEdit} onClose={() => setEditingUser(null)} onResendEmail={() => sendWelcomeEmail(editingUser)} />}
+                {viewingUser && <ViewClientModal user={viewingUser} onClose={() => setViewingUser(null)} />}
+                {showAdminSettings && (
+                    <AdminSettingsModal
+                        currentUser={currentUser}
+                        adminData={adminData}
+                        setAdminData={setAdminData}
+                        saving={adminSaving}
+                        setSaving={setAdminSaving}
+                        onClose={() => setShowAdminSettings(false)}
+                    />
+                )}
+            </AnimatePresence>
+        </div>
+    );
 }
 
 // ==================== ADMIN SETTINGS MODAL ====================

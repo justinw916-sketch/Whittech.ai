@@ -672,7 +672,7 @@ async function handleAuthRequest(request, env, url) {
 
             return new Response(JSON.stringify({
                 success: true,
-                userId: result.meta.last_row_id
+                userId: result?.meta?.last_row_id || 0
             }), {
                 headers: { 'Content-Type': 'application/json', ...corsHeaders }
             });
