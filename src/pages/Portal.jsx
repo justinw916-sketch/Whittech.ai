@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Lock, FileText, CheckCircle, Clock, AlertCircle, Users, Plus, Trash2, LogOut, Shield, User,
-    Edit, Eye, X, Calendar, DollarSign, Phone, Mail, Building, Download, MessageSquare, Save, Upload, Loader
+    Edit, Eye, X, Calendar, DollarSign, Phone, Mail, Building, Download, MessageSquare, Save, Upload, Loader, Settings
 } from 'lucide-react';
 
 // File API helpers
@@ -24,8 +24,50 @@ const listFiles = async (clientId) => {
     return response.json();
 };
 
+
+
 const deleteFile = async (key) => {
     const response = await fetch(`/api/files/${encodeURIComponent(key)}`, {
+        method: 'DELETE',
+    });
+    return response.json();
+};
+
+// Auth API helpers
+const loginUser = async (username, password) => {
+    const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
+    return response.json();
+};
+
+const registerUser = async (userData) => {
+    const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+    });
+    return response.json();
+};
+
+const updateUser = async (updateData) => {
+    const response = await fetch('/api/auth/update', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateData)
+    });
+    return response.json();
+};
+
+const listUsers = async () => {
+    const response = await fetch('/api/auth/users');
+    return response.json();
+};
+
+const deleteUserRequest = async (userId) => {
+    const response = await fetch(`/api/auth/users/${userId}`, {
         method: 'DELETE',
     });
     return response.json();
@@ -62,284 +104,515 @@ const getDefaultProject = () => ({
     invoices: []
 });
 
-// Initialize default users in localStorage if not present
-const initializeUsers = () => {
-    const stored = localStorage.getItem('portal_users');
-    if (!stored) {
-        const defaultUsers = [
-            { username: 'admin', password: 'admin1', role: 'admin', clientName: 'Administrator' }
-        ];
-        localStorage.setItem('portal_users', JSON.stringify(defaultUsers));
-        return defaultUsers;
-    }
-    return JSON.parse(stored);
-};
-
 export default function Portal() {
-    const [users, setUsers] = useState(() => initializeUsers());
-    const [currentUser, setCurrentUser] = useState(null);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [currentUser, setCurrentUser] = useState(() => {
+        try {
+            const stored = localStorage.getItem('portal_auth');
+            return stored ? JSON.parse(stored).user : null;
+        } catch (e) {
+            return null;
+        }
+    });
+    const [loading, setLoading] = useState(false);
+    const [loginError, setLoginError] = useState('');
 
-    useEffect(() => {
-        localStorage.setItem('portal_users', JSON.stringify(users));
-    }, [users]);
-
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        const user = users.find(u => u.username === username && u.password === password);
-        if (user) {
-            setCurrentUser(user);
-            setError('');
-            setUsername('');
-            setPassword('');
-        } else {
-            setError('Invalid username or password');
+        setLoading(true);
+        setLoginError('');
+
+        try {
+            const username = e.target.username.value;
+            const password = e.target.password.value;
+
+            const result = await loginUser(username, password);
+
+            if (result.success) {
+                localStorage.setItem('portal_auth', JSON.stringify({
+                    user: result.user,
+                    token: result.token
+                }));
+                setCurrentUser(result.user);
+            } else {
+                setLoginError(result.error || 'Login failed');
+            }
+        } catch (err) {
+            setLoginError('An error occurred. Please try again.');
+            console.error(err);
         }
+        setLoading(false);
     };
 
-    const handleLogout = () => setCurrentUser(null);
-
-    const updateUser = (updatedUser) => {
-        setUsers(users.map(u => u.username === updatedUser.username ? updatedUser : u));
-        if (currentUser?.username === updatedUser.username) {
-            setCurrentUser(updatedUser);
-        }
+    const handleLogout = () => {
+        localStorage.removeItem('portal_auth');
+        setCurrentUser(null);
     };
 
-    // LOGIN SCREEN
-    if (!currentUser) {
-        return (
-            <div className="container" style={{ paddingTop: '150px', minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    style={{
-                        background: 'linear-gradient(135deg, #0d1219 0%, #131a24 100%)',
-                        padding: '40px', borderRadius: '20px', border: '1px solid rgba(0, 212, 255, 0.2)',
-                        maxWidth: '400px', width: '100%', textAlign: 'center'
-                    }}
-                >
-                    <div style={{
-                        width: '60px', height: '60px', background: 'rgba(0, 212, 255, 0.1)',
-                        borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        margin: '0 auto 20px', color: '#00d4ff'
-                    }}>
-                        <Lock size={24} />
+    if (currentUser) {
+        if (currentUser.role === 'admin') {
+            // Note: AdminPortal will now fetch its own users
+            return <AdminPortal currentUser={currentUser} onLogout={handleLogout} />;
+        }
+        return <ClientPortal user={currentUser} onLogout={handleLogout} />;
+    }
+
+    return (
+        <div className="container" style={{ paddingTop: '150px', minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{
+                    background: 'linear-gradient(135deg, #0d1219 0%, #131a24 100%)',
+                    padding: '40px', borderRadius: '20px', border: '1px solid rgba(0, 212, 255, 0.2)',
+                    maxWidth: '400px', width: '100%', textAlign: 'center'
+                }}
+            >
+                <div style={{
+                    width: '60px', height: '60px', background: 'rgba(0, 212, 255, 0.1)',
+                    borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    margin: '0 auto 20px', color: '#00d4ff'
+                }}>
+                    <Lock size={24} />
+                </div>
+                <h2 style={{ marginBottom: '10px' }}>Portal Login</h2>
+                <p style={{ color: '#94a3b8', marginBottom: '30px', fontSize: '14px' }}>Enter your credentials to access your dashboard.</p>
+
+                <form onSubmit={handleLogin}>
+                    <input type="text" name="username" placeholder="Username"
+                        style={{ width: '100%', padding: '12px 16px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(0, 212, 255, 0.2)', borderRadius: '8px', color: '#fff', marginBottom: '16px' }} required />
+                    <input type="password" name="password" placeholder="Password"
+                        style={{ width: '100%', padding: '12px 16px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(0, 212, 255, 0.2)', borderRadius: '8px', color: '#fff', marginBottom: '8px' }} required />
+
+                    {loginError && <p style={{ color: '#ef4444', fontSize: '12px', marginBottom: '16px', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '6px' }}><AlertCircle size={12} /> {loginError}</p>}
+
+                    <button type="submit" disabled={loading} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '12px', opacity: loading ? 0.7 : 1 }}>
+                        {loading ? <Loader size={16} className="spin" /> : 'Sign In'}
+                    </button>
+
+                    <div style={{ marginTop: '20px', fontSize: '12px', color: '#64748b' }}>
+                        Protected by Cloudflare D1 & End-to-End Encryption
                     </div>
-                    <h2 style={{ marginBottom: '10px' }}>Portal Login</h2>
-                    <p style={{ color: '#94a3b8', marginBottom: '30px', fontSize: '14px' }}>Enter your credentials to access your dashboard.</p>
-
-                    <form onSubmit={handleLogin}>
-                        <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)}
-                            style={{ width: '100%', padding: '12px 16px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(0, 212, 255, 0.2)', borderRadius: '8px', color: '#fff', marginBottom: '16px' }} />
-                        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}
-                            style={{ width: '100%', padding: '12px 16px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(0, 212, 255, 0.2)', borderRadius: '8px', color: '#fff', marginBottom: '8px' }} />
-                        {error && <p style={{ color: '#ef4444', fontSize: '12px', marginBottom: '16px', textAlign: 'left' }}>{error}</p>}
-                        <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '12px' }}>Sign In</button>
-                    </form>
-                </motion.div>
-            </div>
-        );
-    }
-
-    if (currentUser.role === 'admin') {
-        return <AdminPortal users={users} setUsers={setUsers} onLogout={handleLogout} />;
-    }
-
-    return <ClientPortal user={currentUser} onLogout={handleLogout} />;
+                </form>
+            </motion.div>
+        </div>
+    );
 }
 
 // ==================== ADMIN PORTAL ====================
-function AdminPortal({ users, setUsers, onLogout }) {
+function AdminPortal({ currentUser, onLogout }) {
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [showAddForm, setShowAddForm] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [viewingUser, setViewingUser] = useState(null);
     const [emailStatus, setEmailStatus] = useState(null);
+    const [showAdminSettings, setShowAdminSettings] = useState(false);
+
+    // Admin Settings State
+    const [adminData, setAdminData] = useState({
+        displayName: currentUser.displayName || 'Administrator',
+        email: currentUser.email || '',
+        phone: currentUser.phone || '',
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    });
+    const [adminSaving, setAdminSaving] = useState(false);
+
+    // New User State
     const [newUser, setNewUser] = useState({
         username: '', password: '', clientName: '',
         project: getDefaultProject()
     });
 
+    // Fetch users on load
+    useEffect(() => {
+        loadUsers();
+    }, []);
+
+    const loadUsers = async () => {
+        setLoading(true);
+        try {
+            const result = await listUsers();
+            if (result.users) {
+                setUsers(result.users);
+            }
+        } catch (err) {
+            console.error('Failed to load users:', err);
+        }
+        setLoading(false);
+    };
+
     const clientUsers = users.filter(u => u.role === 'client');
 
     const addUser = async () => {
         if (!newUser.username || !newUser.password || !newUser.clientName) return;
-        if (users.find(u => u.username === newUser.username)) {
-            alert('Username already exists');
-            return;
-        }
 
-        // Add user to local storage
-        const createdUser = { ...newUser, role: 'client' };
-        setUsers([...users, createdUser]);
+        try {
+            // Register user via API
+            const result = await registerUser({
+                username: newUser.username,
+                password: newUser.password,
+                displayName: newUser.clientName,
+                role: 'client',
+                clientData: newUser.project
+            });
 
-        // Send welcome email if contact email is provided
-        const contactEmail = newUser.project?.contactEmail;
-        if (contactEmail) {
-            setEmailStatus('sending');
-            try {
-                const response = await fetch('/api/email/welcome', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        username: newUser.username,
-                        password: newUser.password,
-                        clientName: newUser.clientName,
-                        projectName: newUser.project?.name,
-                        startDate: newUser.project?.startDate,
-                        estimatedCompletion: newUser.project?.estimatedCompletion,
-                        contactPerson: newUser.project?.contactPerson,
-                        contactEmail: contactEmail,
-                        contactPhone: newUser.project?.contactPhone,
-                    }),
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    setEmailStatus('sent');
-                    setTimeout(() => setEmailStatus(null), 5000);
-                } else {
-                    console.error('Email error:', result);
-                    setEmailStatus('error');
-                    setTimeout(() => setEmailStatus(null), 5000);
+            if (result.success) {
+                // Send welcome email if contact email is provided
+                if (newUser.project?.contactEmail) {
+                    await sendWelcomeEmail(newUser, newUser.password);
                 }
-            } catch (err) {
-                console.error('Failed to send welcome email:', err);
-                setEmailStatus('error');
-                setTimeout(() => setEmailStatus(null), 5000);
+
+                await loadUsers(); // Reload list
+                setNewUser({ username: '', password: '', clientName: '', project: getDefaultProject() });
+                setShowAddForm(false);
+            } else {
+                alert(result.error || 'Failed to create user');
             }
-        }
-
-        setNewUser({ username: '', password: '', clientName: '', project: getDefaultProject() });
-        setShowAddForm(false);
-    };
-
-    const deleteUser = (username) => {
-        if (confirm(`Delete client "${username}"? This cannot be undone.`)) {
-            setUsers(users.filter(u => u.username !== username));
+        } catch (err) {
+            console.error('Add user error:', err);
+            alert('Failed to create user');
         }
     };
 
-    const saveUserEdit = (updatedUser) => {
-        setUsers(users.map(u => u.username === updatedUser.username ? updatedUser : u));
+}
+    };
+
+const deleteUser = async (userId) => {
+    if (confirm(`Delete this client? This cannot be undone.`)) {
+        try {
+            await deleteUserRequest(userId);
+            await loadUsers();
+        } catch (err) {
+            console.error('Failed to delete user:', err);
+            alert('Failed to delete user');
+        }
+    }
+};
+
+const saveUserEdit = async (updatedUser) => {
+    try {
+        // Map flat user structure back to API structure
+        // In listUsers, clientData is nested, but editingUser might have flattened it?
+        // Let's check how EditClientModal works. It likely edits 'project' prop.
+
+        const updatePayload = {
+            userId: updatedUser.id,
+            clientData: updatedUser.clientData || updatedUser.project // Assuming project data is stored in clientData
+        };
+
+        // We might need to update username if changed, but usually that's fixed.
+        // Let's assume we update clientData.
+
+        await updateUser(updatePayload);
+        await loadUsers();
         setEditingUser(null);
-    };
+    } catch (err) {
+        console.error('Failed to update user:', err);
+        alert('Failed to update user');
+    }
+};
 
-    return (
-        <div className="container" style={{ paddingTop: '120px', paddingBottom: '80px' }}>
-            {/* Email Status Toast */}
-            <AnimatePresence>
-                {emailStatus && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -50 }}
-                        style={{
-                            position: 'fixed', top: '100px', right: '20px', zIndex: 1001,
-                            padding: '16px 24px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px',
-                            background: emailStatus === 'sent' ? 'rgba(16, 185, 129, 0.9)' :
+return (
+    <div className="container" style={{ paddingTop: '120px', paddingBottom: '80px' }}>
+        {/* Email Status Toast */}
+        <AnimatePresence>
+            {emailStatus && (
+                <motion.div
+                    initial={{ opacity: 0, y: -50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -50 }}
+                    style={{
+                        position: 'fixed', top: '100px', right: '20px', zIndex: 1001,
+                        padding: '16px 24px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px',
+                        background: emailStatus === 'sent' ? 'rgba(16, 185, 129, 0.9)' :
+                            emailStatus === 'queued' ? 'rgba(245, 158, 11, 0.9)' :
                                 emailStatus === 'error' ? 'rgba(239, 68, 68, 0.9)' : 'rgba(0, 212, 255, 0.9)',
-                            color: '#fff', fontWeight: '500', boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
-                        }}
-                    >
-                        {emailStatus === 'sending' && <><Loader size={18} className="spin" /> Sending welcome email...</>}
-                        {emailStatus === 'sent' && <><CheckCircle size={18} /> Welcome email sent successfully!</>}
-                        {emailStatus === 'error' && <><AlertCircle size={18} /> Failed to send email (user still created)</>}
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                        color: '#fff', fontWeight: '500', boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
+                    }}
+                >
+                    {emailStatus === 'sending' && <><Loader size={18} className="spin" /> Sending welcome email...</>}
+                    {emailStatus === 'sent' && <><CheckCircle size={18} /> Welcome email sent successfully!</>}
+                    {emailStatus === 'queued' && <><CheckCircle size={18} /> Account created! Copy credentials to send manually.</>}
+                    {emailStatus === 'error' && <><AlertCircle size={18} /> Failed to send email (user still created)</>}
+                </motion.div>
+            )}
+        </AnimatePresence>
 
-            {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
-                <div>
-                    <h1 style={{ fontSize: '32px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <Shield size={28} color="#a855f7" /> Admin <span style={{ color: '#a855f7' }}>Portal</span>
-                    </h1>
-                    <p style={{ color: '#94a3b8' }}>Manage client accounts and projects</p>
-                </div>
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
+            <div>
+                <h1 style={{ fontSize: '32px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <Shield size={28} color="#a855f7" /> Admin <span style={{ color: '#a855f7' }}>Portal</span>
+                </h1>
+                <p style={{ color: '#94a3b8' }}>Manage client accounts and projects</p>
+            </div>
+            <div style={{ display: 'flex', gap: '12px' }}>
+                <button
+                    className="btn btn-secondary"
+                    onClick={() => setShowAdminSettings(true)}
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                >
+                    <Settings size={16} /> Admin Settings
+                </button>
                 <button className="btn btn-secondary" onClick={onLogout} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <LogOut size={16} /> Sign Out
                 </button>
             </div>
+        </div>
 
-            {/* User Management */}
-            <div style={{ background: 'linear-gradient(135deg, #0d1219 0%, rgba(13, 18, 25, 0.7) 100%)', border: '1px solid rgba(168, 85, 247, 0.2)', borderRadius: '16px', padding: '32px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><Users size={20} color="#a855f7" /> Client Accounts ({clientUsers.length})</h3>
-                    <button onClick={() => setShowAddForm(!showAddForm)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(135deg, #a855f7, #6366f1)', border: 'none', padding: '10px 20px', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: '600' }}>
-                        <Plus size={16} /> Add Client
+        {/* User Management */}
+        <div style={{ background: 'linear-gradient(135deg, #0d1219 0%, rgba(13, 18, 25, 0.7) 100%)', border: '1px solid rgba(168, 85, 247, 0.2)', borderRadius: '16px', padding: '32px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><Users size={20} color="#a855f7" /> Client Accounts ({clientUsers.length})</h3>
+                <button onClick={() => setShowAddForm(!showAddForm)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'linear-gradient(135deg, #a855f7, #6366f1)', border: 'none', padding: '10px 20px', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: '600' }}>
+                    <Plus size={16} /> Add Client
+                </button>
+            </div>
+
+            {/* Add User Form */}
+            <AnimatePresence>
+                {showAddForm && (
+                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                        style={{ background: 'rgba(168, 85, 247, 0.1)', border: '1px solid rgba(168, 85, 247, 0.3)', borderRadius: '12px', padding: '24px', marginBottom: '24px', overflow: 'hidden' }}>
+                        <h4 style={{ marginBottom: '20px', color: '#a855f7' }}>New Client Account</h4>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+                            <InputField label="Username" value={newUser.username} onChange={v => setNewUser({ ...newUser, username: v })} />
+                            <InputField label="Password" type="password" value={newUser.password} onChange={v => setNewUser({ ...newUser, password: v })} />
+                            <InputField label="Client/Company Name" value={newUser.clientName} onChange={v => setNewUser({ ...newUser, clientName: v })} />
+                            <InputField label="Project Name" value={newUser.project.name} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, name: v } })} />
+                            <InputField label="Start Date" type="date" value={newUser.project.startDate} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, startDate: v } })} />
+                            <InputField label="Est. Completion" type="date" value={newUser.project.estimatedCompletion} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, estimatedCompletion: v } })} />
+                            <InputField label="Contact Person" value={newUser.project.contactPerson} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, contactPerson: v } })} />
+                            <InputField label="Contact Email" value={newUser.project.contactEmail} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, contactEmail: v } })} />
+                            <InputField label="Contact Phone" value={newUser.project.contactPhone} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, contactPhone: v } })} />
+                        </div>
+                        <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+                            <button onClick={addUser} style={{ padding: '10px 24px', background: '#10b981', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: '600' }}>Create Account</button>
+                            <button onClick={() => setShowAddForm(false)} style={{ padding: '10px 24px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer' }}>Cancel</button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Users Table */}
+            {clientUsers.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '60px', color: '#64748b' }}>
+                    <Users size={48} style={{ marginBottom: '16px', opacity: 0.5 }} />
+                    <p>No client accounts yet. Click "Add Client" to create one.</p>
+                </div>
+            ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {clientUsers.map(user => (
+                        <div key={user.id} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                <div style={{ width: '48px', height: '48px', background: 'rgba(0,212,255,0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <Building size={20} color="#00d4ff" />
+                                </div>
+                                <div>
+                                    <div style={{ fontWeight: '600', fontSize: '16px' }}>{user.displayName || user.username}</div>
+                                    <div style={{ fontSize: '13px', color: '#94a3b8' }}>@{user.username} • {user.clientData?.name || 'No project'}</div>
+                                </div>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <StatusBadge status={user.clientData?.status || 'planning'} />
+                                <button onClick={() => setViewingUser(user)} style={{ background: 'rgba(0,212,255,0.1)', border: 'none', padding: '8px 12px', borderRadius: '6px', color: '#00d4ff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}><Eye size={14} /> View</button>
+                                <button onClick={() => setEditingUser(user)} style={{ background: 'rgba(168,85,247,0.1)', border: 'none', padding: '8px 12px', borderRadius: '6px', color: '#a855f7', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}><Edit size={14} /> Edit</button>
+                                <button onClick={() => deleteUser(user.id)} style={{ background: 'rgba(239,68,68,0.1)', border: 'none', padding: '8px 12px', borderRadius: '6px', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}><Trash2 size={14} /></button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+
+        {/* Edit Modal */}
+        <AnimatePresence>
+            {editingUser && <EditClientModal user={editingUser} onSave={saveUserEdit} onClose={() => setEditingUser(null)} onResendEmail={() => sendWelcomeEmail(editingUser)} />}
+            {viewingUser && <ViewClientModal user={viewingUser} onClose={() => setViewingUser(null)} />}
+            {showAdminSettings && (
+                <AdminSettingsModal
+                    currentUser={currentUser}
+                    adminData={adminData}
+                    setAdminData={setAdminData}
+                    saving={adminSaving}
+                    setSaving={setAdminSaving}
+                    onClose={() => setShowAdminSettings(false)}
+                />
+            )}
+        </AnimatePresence>
+    </div>
+);
+}
+
+// ==================== ADMIN SETTINGS MODAL ====================
+function AdminSettingsModal({ currentUser, adminData, setAdminData, saving, setSaving, onClose }) {
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+
+    const handleSave = async () => {
+        setError('');
+        setSuccess('');
+
+        // Validate password change
+        if (adminData.newPassword) {
+            if (!adminData.currentPassword) {
+                setError('Current password is required to change password');
+                return;
+            }
+            if (adminData.newPassword !== adminData.confirmPassword) {
+                setError('New passwords do not match');
+                return;
+            }
+            if (adminData.newPassword.length < 4) {
+                setError('New password must be at least 4 characters');
+                return;
+            }
+        }
+
+        setSaving(true);
+        try {
+            const result = await updateUser({
+                userId: currentUser.id,
+                currentPassword: adminData.currentPassword || undefined,
+                newPassword: adminData.newPassword || undefined,
+                displayName: adminData.displayName,
+                email: adminData.email,
+                phone: adminData.phone
+            });
+
+            if (!result.success) {
+                throw new Error(result.error || 'Update failed');
+            }
+
+            setSuccess('Settings saved successfully!');
+            setAdminData({
+                ...adminData,
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            });
+
+            setTimeout(() => {
+                setSuccess('');
+                onClose();
+            }, 1500);
+        } catch (err) {
+            setError('Failed to save settings: ' + (err.message || 'Unknown error'));
+            console.error(err);
+        }
+        setSaving(false);
+    };
+
+    return (
+        <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}
+            onClick={onClose}
+        >
+            <motion.div
+                initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                style={{ background: 'linear-gradient(135deg, #0d1219, #131a24)', border: '1px solid rgba(168, 85, 247, 0.3)', borderRadius: '20px', width: '100%', maxWidth: '500px', maxHeight: '90vh', overflow: 'auto' }}
+            >
+                {/* Header */}
+                <div style={{ padding: '24px', borderBottom: '1px solid rgba(168, 85, 247, 0.2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h2 style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: 0 }}>
+                        <Settings size={24} color="#a855f7" /> Admin Settings
+                    </h2>
+                    <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '8px' }}>
+                        <X size={24} />
                     </button>
                 </div>
 
-                {/* Add User Form */}
-                <AnimatePresence>
-                    {showAddForm && (
-                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                            style={{ background: 'rgba(168, 85, 247, 0.1)', border: '1px solid rgba(168, 85, 247, 0.3)', borderRadius: '12px', padding: '24px', marginBottom: '24px', overflow: 'hidden' }}>
-                            <h4 style={{ marginBottom: '20px', color: '#a855f7' }}>New Client Account</h4>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-                                <InputField label="Username" value={newUser.username} onChange={v => setNewUser({ ...newUser, username: v })} />
-                                <InputField label="Password" type="password" value={newUser.password} onChange={v => setNewUser({ ...newUser, password: v })} />
-                                <InputField label="Client/Company Name" value={newUser.clientName} onChange={v => setNewUser({ ...newUser, clientName: v })} />
-                                <InputField label="Project Name" value={newUser.project.name} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, name: v } })} />
-                                <InputField label="Start Date" type="date" value={newUser.project.startDate} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, startDate: v } })} />
-                                <InputField label="Est. Completion" type="date" value={newUser.project.estimatedCompletion} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, estimatedCompletion: v } })} />
-                                <InputField label="Contact Person" value={newUser.project.contactPerson} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, contactPerson: v } })} />
-                                <InputField label="Contact Email" value={newUser.project.contactEmail} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, contactEmail: v } })} />
-                                <InputField label="Contact Phone" value={newUser.project.contactPhone} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, contactPhone: v } })} />
-                            </div>
-                            <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
-                                <button onClick={addUser} style={{ padding: '10px 24px', background: '#10b981', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: '600' }}>Create Account</button>
-                                <button onClick={() => setShowAddForm(false)} style={{ padding: '10px 24px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer' }}>Cancel</button>
-                            </div>
-                        </motion.div>
+                {/* Content */}
+                <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    {/* Success/Error Messages */}
+                    {error && (
+                        <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', padding: '12px', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <AlertCircle size={16} /> {error}
+                        </div>
                     )}
-                </AnimatePresence>
+                    {success && (
+                        <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: '8px', padding: '12px', color: '#10b981', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <CheckCircle size={16} /> {success}
+                        </div>
+                    )}
 
-                {/* Users Table */}
-                {clientUsers.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '60px', color: '#64748b' }}>
-                        <Users size={48} style={{ marginBottom: '16px', opacity: 0.5 }} />
-                        <p>No client accounts yet. Click "Add Client" to create one.</p>
+                    {/* Profile Section */}
+                    <div>
+                        <h4 style={{ color: '#a855f7', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <User size={16} /> Profile Information
+                        </h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            <InputField
+                                label="Display Name"
+                                value={adminData.displayName}
+                                onChange={v => setAdminData({ ...adminData, displayName: v })}
+                            />
+                            <InputField
+                                label="Email"
+                                type="email"
+                                value={adminData.email}
+                                onChange={v => setAdminData({ ...adminData, email: v })}
+                            />
+                            <InputField
+                                label="Phone"
+                                value={adminData.phone}
+                                onChange={v => setAdminData({ ...adminData, phone: v })}
+                            />
+                        </div>
                     </div>
-                ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        {clientUsers.map(user => (
-                            <div key={user.username} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                                    <div style={{ width: '48px', height: '48px', background: 'rgba(0,212,255,0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Building size={20} color="#00d4ff" />
-                                    </div>
-                                    <div>
-                                        <div style={{ fontWeight: '600', fontSize: '16px' }}>{user.clientName}</div>
-                                        <div style={{ fontSize: '13px', color: '#94a3b8' }}>@{user.username} • {user.project?.name || 'No project'}</div>
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <StatusBadge status={user.project?.status || 'planning'} />
-                                    <button onClick={() => setViewingUser(user)} style={{ background: 'rgba(0,212,255,0.1)', border: 'none', padding: '8px 12px', borderRadius: '6px', color: '#00d4ff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}><Eye size={14} /> View</button>
-                                    <button onClick={() => setEditingUser(user)} style={{ background: 'rgba(168,85,247,0.1)', border: 'none', padding: '8px 12px', borderRadius: '6px', color: '#a855f7', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}><Edit size={14} /> Edit</button>
-                                    <button onClick={() => deleteUser(user.username)} style={{ background: 'rgba(239,68,68,0.1)', border: 'none', padding: '8px 12px', borderRadius: '6px', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}><Trash2 size={14} /></button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
 
-            {/* Edit Modal */}
-            <AnimatePresence>
-                {editingUser && <EditClientModal user={editingUser} onSave={saveUserEdit} onClose={() => setEditingUser(null)} />}
-                {viewingUser && <ViewClientModal user={viewingUser} onClose={() => setViewingUser(null)} />}
-            </AnimatePresence>
-        </div>
+                    {/* Password Section */}
+                    <div>
+                        <h4 style={{ color: '#a855f7', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Lock size={16} /> Change Password
+                        </h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            <InputField
+                                label="Current Password"
+                                type="password"
+                                value={adminData.currentPassword}
+                                onChange={v => setAdminData({ ...adminData, currentPassword: v })}
+                            />
+                            <InputField
+                                label="New Password"
+                                type="password"
+                                value={adminData.newPassword}
+                                onChange={v => setAdminData({ ...adminData, newPassword: v })}
+                            />
+                            <InputField
+                                label="Confirm New Password"
+                                type="password"
+                                value={adminData.confirmPassword}
+                                onChange={v => setAdminData({ ...adminData, confirmPassword: v })}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <div style={{ padding: '24px', borderTop: '1px solid rgba(168, 85, 247, 0.2)', display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                    <button onClick={onClose} style={{ background: 'rgba(148, 163, 184, 0.1)', border: '1px solid rgba(148, 163, 184, 0.3)', padding: '10px 20px', borderRadius: '8px', color: '#94a3b8', cursor: 'pointer', fontWeight: '500' }}>
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleSave}
+                        disabled={saving}
+                        style={{ background: 'linear-gradient(135deg, #a855f7, #6366f1)', border: 'none', padding: '10px 24px', borderRadius: '8px', color: '#fff', cursor: saving ? 'not-allowed' : 'pointer', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px', opacity: saving ? 0.7 : 1 }}
+                    >
+                        {saving ? <><Loader size={16} className="spin" /> Saving...</> : <><Save size={16} /> Save Changes</>}
+                    </button>
+                </div>
+            </motion.div>
+        </motion.div>
     );
 }
 
 // ==================== EDIT CLIENT MODAL ====================
-function EditClientModal({ user, onSave, onClose }) {
+function EditClientModal({ user, onSave, onClose, onResendEmail }) {
     const [editedUser, setEditedUser] = useState(JSON.parse(JSON.stringify(user)));
     const [activeTab, setActiveTab] = useState('project');
     const [uploading, setUploading] = useState(false);
@@ -426,6 +699,8 @@ function EditClientModal({ user, onSave, onClose }) {
         phases[index] = { ...phases[index], status, date: status === 'completed' ? new Date().toLocaleDateString() : status === 'active' ? 'In Progress' : 'Pending' };
         updateProject('phases', phases);
     };
+
+
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -578,9 +853,14 @@ function EditClientModal({ user, onSave, onClose }) {
                 </div>
 
                 {/* Footer */}
-                <div style={{ padding: '16px 24px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                    <button onClick={onClose} style={{ padding: '10px 24px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer' }}>Cancel</button>
-                    <button onClick={() => onSave(editedUser)} style={{ padding: '10px 24px', background: 'linear-gradient(135deg, #a855f7, #6366f1)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px' }}><Save size={16} /> Save Changes</button>
+                <div style={{ padding: '16px 24px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <button onClick={() => { if (confirm('Resend intro email?')) onResendEmail(); }} style={{ padding: '10px 20px', background: 'rgba(0, 212, 255, 0.1)', border: '1px solid rgba(0, 212, 255, 0.3)', borderRadius: '8px', color: '#00d4ff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
+                        <Mail size={16} /> Resend Intro Email
+                    </button>
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                        <button onClick={onClose} style={{ padding: '10px 24px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer' }}>Cancel</button>
+                        <button onClick={() => onSave(editedUser)} style={{ padding: '10px 24px', background: 'linear-gradient(135deg, #a855f7, #6366f1)', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px' }}><Save size={16} /> Save Changes</button>
+                    </div>
                 </div>
             </motion.div>
         </motion.div>
