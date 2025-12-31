@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhitTech.AI Client Portal - User Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #fff;
+        }
+
+        h1 {
+            color: #0066cc;
+            font-size: 28px;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #0066cc;
+            font-size: 22px;
+            margin-top: 30px;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            color: #333;
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h4 {
+            color: #555;
+            font-size: 16px;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 12px;
+        }
+
+        ul,
+        ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .toc {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .toc li {
+            padding: 5px 0;
+        }
+
+        .toc a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin: 15px 0;
+        }
+
+        .info {
+            background: #e7f3ff;
+            border-left: 4px solid #0066cc;
+            padding: 12px;
+            margin: 15px 0;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 12px;
+            margin: 15px 0;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        .url {
+            color: #0066cc;
+            font-weight: bold;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 30px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #f5f5f5;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 14px;
+        }
+
+        @media print {
+            body {
+                padding: 20px;
+            }
+
+            .toc {
+                break-after: page;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>WhitTech.AI Client Portal</h1>
+    <p class="subtitle">User Guide & Documentation</p>
+
+    <div class="toc">
+        <h3>Table of Contents</h3>
+        <ul>
+            <li>1. <a href="#overview">Overview</a></li>
+            <li>2. <a href="#admin">Admin Portal</a>
+                <ul>
+                    <li>Logging In</li>
+                    <li>Managing Client Accounts</li>
+                    <li>Editing Client Projects</li>
+                    <li>Uploading Documents</li>
+                </ul>
+            </li>
+            <li>3. <a href="#client">Client Portal</a>
+                <ul>
+                    <li>Logging In</li>
+                    <li>Dashboard Overview</li>
+                    <li>Downloading Documents</li>
+                </ul>
+            </li>
+            <li>4. <a href="#storage">Cloud Storage</a></li>
+        </ul>
+    </div>
+
+    <h2 id="overview">1. Overview</h2>
+    <p>The WhitTech.AI Client Portal is a secure web-based system that allows:</p>
+    <ul>
+        <li><strong>Administrators</strong> to manage client accounts, update project details, and upload documents</li>
+        <li><strong>Clients</strong> to view their project progress, download documents, and access invoices</li>
+    </ul>
+    <p><strong>Portal URL:</strong> <span class="url">https://whittech.ai/portal</span></p>
+
+    <hr>
+
+    <h2 id="admin">2. Admin Portal</h2>
+
+    <h3>Logging In</h3>
+    <ol>
+        <li>Navigate to <span class="url">https://whittech.ai/portal</span></li>
+        <li>Enter your admin credentials:
+            <ul>
+                <li><strong>Username:</strong> <code>admin</code></li>
+                <li><strong>Password:</strong> <code>admin1</code></li>
+            </ul>
+        </li>
+        <li>Click <strong>Sign In</strong></li>
+    </ol>
+    <p>You will be redirected to the Admin Portal dashboard.</p>
+
+    <h3>Managing Client Accounts</h3>
+
+    <h4>Creating a New Client</h4>
+    <ol>
+        <li>Click the <strong>"+ Add Client"</strong> button (purple button, top right)</li>
+        <li>Fill in the required fields:</li>
+    </ol>
+    <table>
+        <tr>
+            <th>Field</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>Username</td>
+            <td>Client's login username</td>
+        </tr>
+        <tr>
+            <td>Password</td>
+            <td>Client's login password</td>
+        </tr>
+        <tr>
+            <td>Client/Company Name</td>
+            <td>Display name for the client</td>
+        </tr>
+        <tr>
+            <td>Project Name</td>
+            <td>Name of their project</td>
+        </tr>
+        <tr>
+            <td>Start Date</td>
+            <td>Project start date</td>
+        </tr>
+        <tr>
+            <td>Est. Completion</td>
+            <td>Estimated completion date</td>
+        </tr>
+        <tr>
+            <td>Contact Person</td>
+            <td>Project manager name</td>
+        </tr>
+        <tr>
+            <td>Contact Email</td>
+            <td>Project manager email</td>
+        </tr>
+        <tr>
+            <td>Contact Phone</td>
+            <td>Project manager phone</td>
+        </tr>
+    </table>
+    <ol start="3">
+        <li>Click <strong>"Create Account"</strong></li>
+    </ol>
+
+    <h4>Viewing a Client Dashboard</h4>
+    <ol>
+        <li>Find the client in your list</li>
+        <li>Click the <strong>"View"</strong> button (eye icon)</li>
+        <li>A preview of exactly what the client sees will appear</li>
+    </ol>
+
+    <h4>Deleting a Client</h4>
+    <ol>
+        <li>Find the client in your list</li>
+        <li>Click the <strong>trash icon</strong> button</li>
+        <li>Confirm the deletion when prompted</li>
+    </ol>
+    <div class="warning">
+        <strong>⚠️ Warning:</strong> Deleting a client removes all their data permanently.
+    </div>
+
+    <h3>Editing Client Projects</h3>
+    <ol>
+        <li>Find the client in your list</li>
+        <li>Click the <strong>"Edit"</strong> button (pencil icon)</li>
+        <li>A modal window opens with <strong>5 tabs</strong>:</li>
+    </ol>
+
+    <h4>Tab 1: Project</h4>
+    <ul>
+        <li>Update project name, status, and progress percentage</li>
+        <li>Modify dates and contact information</li>
+    </ul>
+
+    <h4>Tab 2: Phases</h4>
+    <ul>
+        <li>Set project phases to: <strong>Pending</strong>, <strong>Active</strong>, or <strong>Completed</strong></li>
+        <li>Phases include: Planning, Design, Development, Testing, Launch</li>
+    </ul>
+
+    <h4>Tab 3: Documents</h4>
+    <ul>
+        <li>Click <strong>"Upload File"</strong> to add documents (stored in cloud)</li>
+        <li>View existing documents with download/delete options</li>
+        <li>Files are stored securely in Cloudflare R2</li>
+    </ul>
+
+    <h4>Tab 4: Updates</h4>
+    <ul>
+        <li>Click <strong>"+ Add Update"</strong> to post a new project update</li>
+        <li>Enter a message describing the latest progress</li>
+        <li>Updates appear in reverse chronological order</li>
+    </ul>
+
+    <h4>Tab 5: Invoices</h4>
+    <ul>
+        <li>Click <strong>"+ Add Invoice"</strong> to create a new invoice</li>
+        <li>Enter the invoice amount</li>
+        <li>Toggle invoice status between <strong>Pending</strong> and <strong>Paid</strong></li>
+    </ul>
+    <ol start="4">
+        <li>Click <strong>"Save Changes"</strong> when finished</li>
+    </ol>
+
+    <h3>Uploading Documents</h3>
+    <ol>
+        <li>Edit a client's project</li>
+        <li>Go to the <strong>Documents</strong> tab</li>
+        <li>Click <strong>"Upload File"</strong></li>
+        <li>Select a file from your computer</li>
+        <li>Wait for the upload to complete (you'll see a loading indicator)</li>
+        <li>The file will appear in the list with:
+            <ul>
+                <li>Filename</li>
+                <li>File size</li>
+                <li>Download button</li>
+                <li>Delete button</li>
+            </ul>
+        </li>
+    </ol>
+    <div class="info">
+        <strong>Supported file types:</strong> All common file types (PDF, DOC, XLS, images, etc.)<br>
+        <strong>Maximum file size:</strong> 100 MB per file
+    </div>
+
+    <hr>
+
+    <h2 id="client">3. Client Portal</h2>
+
+    <h3>Logging In</h3>
+    <ol>
+        <li>Navigate to <span class="url">https://whittech.ai/portal</span></li>
+        <li>Enter the credentials provided by your administrator</li>
+        <li>Click <strong>Sign In</strong></li>
+    </ol>
+    <p>You will be redirected to your personalized project dashboard.</p>
+
+    <h3>Dashboard Overview</h3>
+    <p>Your dashboard displays:</p>
+
+    <h4>Project Overview Card</h4>
+    <ul>
+        <li><strong>Project Name</strong> and current <strong>Status</strong> badge</li>
+        <li><strong>Progress Bar</strong> showing overall completion percentage</li>
+        <li><strong>Start Date</strong> and <strong>Estimated Completion</strong> date</li>
+        <li><strong>Financial Summary:</strong> Total invoiced and amount paid</li>
+    </ul>
+
+    <h4>Project Phases</h4>
+    <p>A visual timeline showing the status of each phase:</p>
+    <ul>
+        <li>✅ <strong>Completed</strong> (green checkmark)</li>
+        <li>🔄 <strong>Active</strong> (blue clock icon)</li>
+        <li>⏳ <strong>Pending</strong> (gray icon)</li>
+    </ul>
+
+    <h4>Documents</h4>
+    <ul>
+        <li>List of all documents uploaded by your project manager</li>
+        <li>Click the <strong>download button</strong> to save files to your computer</li>
+    </ul>
+
+    <h4>Recent Updates</h4>
+    <ul>
+        <li>Chronological feed of project updates and announcements</li>
+        <li>Most recent updates appear first</li>
+    </ul>
+
+    <h4>Invoices</h4>
+    <ul>
+        <li>Complete list of all invoices</li>
+        <li>Shows invoice ID, amount, date, and payment status</li>
+    </ul>
+
+    <h4>Your Project Manager</h4>
+    <ul>
+        <li>Contact information for your assigned project manager</li>
+        <li>Includes name, email, and phone number</li>
+    </ul>
+
+    <h3>Downloading Documents</h3>
+    <ol>
+        <li>Scroll to the <strong>Documents</strong> section on your dashboard</li>
+        <li>Find the document you want to download</li>
+        <li>Click the <strong>download button</strong> (down arrow icon)</li>
+        <li>The file will download to your computer</li>
+    </ol>
+
+    <hr>
+
+    <h2 id="storage">4. Cloud Storage</h2>
+    <p>All documents are stored securely using <strong>Cloudflare R2 Object Storage</strong>.</p>
+
+    <div class="success">
+        <strong>Benefits:</strong>
+        <ul>
+            <li>✅ <strong>Secure</strong> - Enterprise-grade encryption</li>
+            <li>✅ <strong>Fast</strong> - Global CDN delivery</li>
+            <li>✅ <strong>Reliable</strong> - 99.999% durability</li>
+            <li>✅ <strong>No egress fees</strong> - Download as much as needed</li>
+        </ul>
+    </div>
+
+    <h3>For Administrators</h3>
+    <p>Files are organized by client with the path structure:</p>
+    <p><code>clients/{username}/{timestamp}_{filename}</code></p>
+
+    <p>You can view all stored files in the Cloudflare Dashboard:</p>
+    <ol>
+        <li>Go to <span class="url">dash.cloudflare.com</span></li>
+        <li>Navigate to <strong>R2 Object Storage</strong></li>
+        <li>Open the <strong>client-portal-files</strong> bucket</li>
+    </ol>
+
+    <hr>
+
+    <h2>Support</h2>
+    <p>For technical support or questions, contact:</p>
+    <p><strong>Email:</strong> jwhitton@zoho.com</p>
+    <p><strong>Website:</strong> whittech.ai/contact</p>
+
+    <div class="footer">
+        <p>© 2025 WhitTech.AI - All Rights Reserved</p>
+    </div>
+
+</body>
+
+</html>
