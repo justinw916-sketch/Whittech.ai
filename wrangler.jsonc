@@ -9,5 +9,11 @@
     },
     "ai": {
         "binding": "AI"
-    }
+    },
+    "r2_buckets": [
+        {
+            "binding": "FILES",
+            "bucket_name": "client-portal-files"
+        }
+    ]
 }
