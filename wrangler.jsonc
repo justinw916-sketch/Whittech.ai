@@ -24,9 +24,6 @@
             "database_id": "ed0f5327-1f04-4716-9fcf-a77081fc191d"
         }
     ],
-    "vars": {
-        "RESEND_API_KEY": "re_jauGkg7b_JVqtttpxQ2To3P2qiRx7UgFa"
-    },
     "routes": [
         {
             "pattern": "whittech.ai/*",

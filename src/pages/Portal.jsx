@@ -5,73 +5,109 @@ import {
     Edit, Eye, X, Calendar, DollarSign, Phone, Mail, Building, Download, MessageSquare, Save, Upload, Loader, Settings
 } from 'lucide-react';
 
-// File API helpers
-const uploadFile = async (file, clientId) => {
+const API_URL = '/api';
+
+// Helper to get auth headers
+const getAuthHeaders = () => {
+    const result = localStorage.getItem('portal_auth');
+    if (!result) return { 'Content-Type': 'application/json' };
+
+    try {
+        const { token } = JSON.parse(result);
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+    } catch (e) {
+        return { 'Content-Type': 'application/json' };
+    }
+};
+
+// -- API Helpers --
+
+async function listFiles(clientId) {
+    const res = await fetch(`${API_URL}/files/list/${clientId}`, {
+        headers: getAuthHeaders()
+    });
+    return res.json();
+}
+
+async function uploadFile(file, clientId) {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('clientId', clientId);
-    formData.append('filename', file.name);
 
-    const response = await fetch('/api/files/upload', {
+    // Note: FormData requires letting browser set Content-Type boundary, so we only append Auth
+    const headers = getAuthHeaders();
+    delete headers['Content-Type']; // Remove application/json
+
+    const res = await fetch(`${API_URL}/files/upload`, {
         method: 'POST',
-        body: formData,
+        headers: {
+            ...headers
+        },
+        body: formData
     });
-    return response.json();
-};
+    return res.json();
+}
 
-const listFiles = async (clientId) => {
-    const response = await fetch(`/api/files/list/${clientId}`);
-    return response.json();
-};
+async function downloadFile(key) {
+    const res = await fetch(`${API_URL}/files/download/${encodeURIComponent(key)}`, {
+        headers: getAuthHeaders()
+    });
+    if (!res.ok) throw new Error('Download failed');
+    return res.blob();
+}
 
-
-
-const deleteFile = async (key) => {
-    const response = await fetch(`/api/files/${encodeURIComponent(key)}`, {
+async function deleteFile(key) {
+    const res = await fetch(`${API_URL}/files/${encodeURIComponent(key)}`, {
         method: 'DELETE',
+        headers: getAuthHeaders()
     });
-    return response.json();
-};
+    return res.json();
+}
 
-// Auth API helpers
-const loginUser = async (username, password) => {
-    const response = await fetch('/api/auth/login', {
+async function registerUser(userData) {
+    const res = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-    });
-    return response.json();
-};
-
-const registerUser = async (userData) => {
-    const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(userData)
     });
-    return response.json();
-};
+    return res.json();
+}
 
-const updateUser = async (updateData) => {
-    const response = await fetch('/api/auth/update', {
+async function updateUser(userData) {
+    const res = await fetch(`${API_URL}/auth/update`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updateData)
+        headers: getAuthHeaders(),
+        body: JSON.stringify(userData)
     });
-    return response.json();
-};
+    return res.json();
+}
 
-const listUsers = async () => {
-    const response = await fetch('/api/auth/users');
-    return response.json();
-};
+async function listUsers() {
+    const res = await fetch(`${API_URL}/auth/users`, {
+        headers: getAuthHeaders()
+    });
+    return res.json();
+}
 
-const deleteUserRequest = async (userId) => {
-    const response = await fetch(`/api/auth/users/${userId}`, {
+async function deleteUserRequest(userId) {
+    const res = await fetch(`${API_URL}/auth/users/${userId}`, {
         method: 'DELETE',
+        headers: getAuthHeaders()
     });
-    return response.json();
-};
+    return res.json();
+}
+
+async function loginUser(username, password) {
+    const res = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }, // Public endpoint
+        body: JSON.stringify({ username, password })
+    });
+    return res.json();
+}
 
 // Format file size to human readable
 const formatFileSize = (bytes) => {
@@ -113,34 +149,69 @@ export default function Portal() {
             return null;
         }
     });
+
     const [loading, setLoading] = useState(false);
     const [loginError, setLoginError] = useState('');
+    const [turnstileToken, setTurnstileToken] = useState(null);
+
+    useEffect(() => {
+        // Load Turnstile Script
+        const script = document.createElement('script');
+        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+        script.async = true;
+        document.body.appendChild(script);
+
+        // Render Widget
+        window.onloadTurnstileCallback = () => {
+            turnstile.render('#cf-turnstile', {
+                sitekey: '1x00000000000000000000AA', // Test Site Key
+                callback: function (token) {
+                    setTurnstileToken(token);
+                },
+            });
+        };
+
+        return () => {
+            document.body.removeChild(script);
+        }
+    }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
         setLoginError('');
 
+        // if (!turnstileToken) {
+        //    setLoginError('Please complete the CAPTCHA check');
+        //    setLoading(false);
+        //    return;
+        // } 
+        // Note: For smooth rollout, allowing null token initially until user verifies widget loads.
+
         try {
             const username = e.target.username.value;
             const password = e.target.password.value;
 
-            const result = await loginUser(username, password);
+            const result = await loginUser(username, password, turnstileToken); // Pass token
 
             if (result.success) {
+                const expiry = new Date();
+                expiry.setDate(expiry.getDate() + 1);
+
                 localStorage.setItem('portal_auth', JSON.stringify({
                     user: result.user,
-                    token: result.token
+                    token: result.token,
+                    expiry: expiry.toISOString()
                 }));
                 setCurrentUser(result.user);
             } else {
                 setLoginError(result.error || 'Login failed');
             }
         } catch (err) {
-            setLoginError('An error occurred. Please try again.');
-            console.error(err);
+            setLoginError('System error: ' + err.message);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleLogout = () => {
@@ -241,6 +312,44 @@ function AdminPortal({ currentUser, onLogout }) {
             console.error('Failed to load users:', err);
         }
         setLoading(false);
+    };
+
+    const sendWelcomeEmail = async (user, password = null) => {
+        setEmailStatus('sending');
+        try {
+            const response = await fetch('/api/email/welcome', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: user.username,
+                    password: password, // Pass specific password if available (e.g., new registration)
+                    clientName: user.displayName || user.clientName, // Handle both structures
+                    projectName: user.clientData?.name || user.project?.name,
+                    startDate: user.clientData?.startDate || user.project?.startDate,
+                    estimatedCompletion: user.clientData?.estimatedCompletion || user.project?.estimatedCompletion,
+                    contactPerson: user.clientData?.contactPerson || user.project?.contactPerson,
+                    contactEmail: user.email || user.project?.contactEmail,
+                    contactPhone: user.phone || user.project?.contactPhone,
+                }),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                setEmailStatus(result.fallback ? 'queued' : 'sent');
+                setTimeout(() => setEmailStatus(null), 5000);
+            } else {
+                console.error('Email failed:', result.error);
+                setEmailStatus('error');
+                setTimeout(() => setEmailStatus(null), 5000);
+            }
+        } catch (err) {
+            console.error('Email error:', err);
+            setEmailStatus('error');
+            setTimeout(() => setEmailStatus(null), 5000);
+        }
     };
 
     const clientUsers = users.filter(u => u.role === 'client');
