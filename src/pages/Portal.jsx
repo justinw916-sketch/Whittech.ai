@@ -282,6 +282,7 @@ function AdminPortal({ currentUser, onLogout }) {
     const [editingUser, setEditingUser] = useState(null);
     const [viewingUser, setViewingUser] = useState(null);
     const [emailStatus, setEmailStatus] = useState(null);
+    const [emailError, setEmailError] = useState(null); // Stores dynamic email error message
     const [showAdminSettings, setShowAdminSettings] = useState(false);
 
     // Admin Settings State
@@ -344,17 +345,13 @@ function AdminPortal({ currentUser, onLogout }) {
 
             if (result.success) {
                 setEmailStatus('sent');
+                setEmailError(null);
                 setTimeout(() => setEmailStatus(null), 5000);
             } else {
                 console.error('Email failed:', result.error);
-                // Set error message to state to display in toast
-                setLoginError(result.error); // Reuse loginError state or create new one? 
-                // Let's use setEmailStatus with a custom message approach or just fail.
-                // The current UI uses 'error' string to show generic error.
-                // Let's show the specific error in an alert for now for immediate debugging
-                alert(`Email Failed: ${result.error}`);
+                setEmailError(result.error); // Store the specific error message
                 setEmailStatus('error');
-                setTimeout(() => setEmailStatus(null), 5000);
+                setTimeout(() => { setEmailStatus(null); setEmailError(null); }, 8000); // Longer timeout to read error
             }
         } catch (err) {
             console.error('Email error:', err);
@@ -455,7 +452,7 @@ function AdminPortal({ currentUser, onLogout }) {
                         {emailStatus === 'sending' && <><Loader size={18} className="spin" /> Sending welcome email...</>}
                         {emailStatus === 'sent' && <><CheckCircle size={18} /> Welcome email sent successfully!</>}
                         {emailStatus === 'queued' && <><CheckCircle size={18} /> Account created! Copy credentials to send manually.</>}
-                        {emailStatus === 'error' && <><AlertCircle size={18} /> Failed to send email (user still created)</>}
+                        {emailStatus === 'error' && <><AlertCircle size={18} /> {emailError || 'Failed to send email (user still created)'}</>}
                     </motion.div>
                 )}
             </AnimatePresence>
