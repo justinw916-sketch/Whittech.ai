@@ -881,12 +881,15 @@ async function handleAuthRequest(request, env, url, corsHeaders) {
         }
 
         try {
-            const { userId, currentPassword, newPassword, displayName, email, phone, clientData } = await request.json();
+            const { userId, username, currentPassword, newPassword, displayName, email, phone, clientData } = await request.json();
 
             // Authorization Check: User can update themselves, Admin can update anyone
             if (requester.role !== 'admin' && requester.user_id !== userId) {
                 return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: corsHeaders });
             }
+
+            // Fetch target user to update
+            const user = await db.prepare('SELECT * FROM users WHERE id = ?').bind(userId).first();
 
             if (!user) {
                 return new Response(JSON.stringify({ error: 'User not found' }), {
@@ -924,6 +927,7 @@ async function handleAuthRequest(request, env, url, corsHeaders) {
             // Update other fields
             await db.prepare(
                 `UPDATE users SET 
+                    username = COALESCE(?, username),
                     display_name = COALESCE(?, display_name),
                     email = COALESCE(?, email),
                     phone = COALESCE(?, phone),
@@ -931,6 +935,7 @@ async function handleAuthRequest(request, env, url, corsHeaders) {
                     updated_at = CURRENT_TIMESTAMP
                  WHERE id = ?`
             ).bind(
+                username || null,
                 displayName || null,
                 email || null,
                 phone || null,

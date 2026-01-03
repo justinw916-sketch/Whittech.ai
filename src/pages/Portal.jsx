@@ -286,6 +286,7 @@ function AdminPortal({ currentUser, onLogout }) {
 
     // Admin Settings State
     const [adminData, setAdminData] = useState({
+        username: currentUser.username || '',
         displayName: currentUser.displayName || 'Administrator',
         email: currentUser.email || '',
         phone: currentUser.phone || '',
@@ -592,6 +593,7 @@ function AdminSettingsModal({ currentUser, adminData, setAdminData, saving, setS
                 userId: currentUser.id,
                 currentPassword: adminData.currentPassword || undefined,
                 newPassword: adminData.newPassword || undefined,
+                username: adminData.username,
                 displayName: adminData.displayName,
                 email: adminData.email,
                 phone: adminData.phone
@@ -665,6 +667,11 @@ function AdminSettingsModal({ currentUser, adminData, setAdminData, saving, setS
                                 label="Display Name"
                                 value={adminData.displayName}
                                 onChange={v => setAdminData({ ...adminData, displayName: v })}
+                            />
+                            <InputField
+                                label="Username"
+                                value={adminData.username}
+                                onChange={v => setAdminData({ ...adminData, username: v })}
                             />
                             <InputField
                                 label="Email"
