@@ -343,10 +343,16 @@ function AdminPortal({ currentUser, onLogout }) {
             const result = await response.json();
 
             if (result.success) {
-                setEmailStatus(result.fallback ? 'queued' : 'sent');
+                setEmailStatus('sent');
                 setTimeout(() => setEmailStatus(null), 5000);
             } else {
                 console.error('Email failed:', result.error);
+                // Set error message to state to display in toast
+                setLoginError(result.error); // Reuse loginError state or create new one? 
+                // Let's use setEmailStatus with a custom message approach or just fail.
+                // The current UI uses 'error' string to show generic error.
+                // Let's show the specific error in an alert for now for immediate debugging
+                alert(`Email Failed: ${result.error}`);
                 setEmailStatus('error');
                 setTimeout(() => setEmailStatus(null), 5000);
             }

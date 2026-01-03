@@ -453,23 +453,24 @@ async function handleWelcomeEmail(request, env, corsHeaders) {
                 });
             }
 
-            // If Resend fails, log it but still return success with email data stored
+            // If Resend fails, log it and return error details
             console.error('Resend API Error:', result);
+            return new Response(JSON.stringify({
+                success: false, // Mark as false to alert user
+                error: `Resend API Error: ${result.message || result.name || 'Unknown error'}`,
+                fallback: true,
+                emailData: { to: contactEmail, subject: `Welcome to WhitTech.AI...`, username, password }
+            }), {
+                headers: { 'Content-Type': 'application/json', ...corsHeaders }
+            });
         }
 
-        // Fallback: Store email for manual sending and return success
-        // This ensures the user flow isn't broken even if email fails
+        // Missing API Key
         return new Response(JSON.stringify({
-            success: true,
+            success: false,
+            error: 'Missing or Invalid Resend API Key',
             fallback: true,
-            message: 'Account created. Email notification queued.',
-            emailData: {
-                to: contactEmail,
-                subject: `Welcome to WhitTech.AI - Your Portal Access for ${projectName}`,
-                clientName,
-                username,
-                password
-            }
+            emailData: { to: contactEmail, subject: `Welcome to WhitTech.AI...`, username, password }
         }), {
             headers: { 'Content-Type': 'application/json', ...corsHeaders }
         });
