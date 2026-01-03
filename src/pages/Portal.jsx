@@ -721,7 +721,18 @@ function AdminSettingsModal({ currentUser, adminData, setAdminData, saving, setS
 
 // ==================== EDIT CLIENT MODAL ====================
 function EditClientModal({ user, onSave, onClose, onResendEmail }) {
-    const [editedUser, setEditedUser] = useState(JSON.parse(JSON.stringify(user)));
+    const [editedUser, setEditedUser] = useState(() => {
+        const u = JSON.parse(JSON.stringify(user));
+        // Map clientData to project if project is missing (API returns clientData)
+        if (!u.project && u.clientData) {
+            u.project = u.clientData;
+        }
+        // Ensure project structure exists
+        if (!u.project) {
+            u.project = getDefaultProject();
+        }
+        return u;
+    });
     const [activeTab, setActiveTab] = useState('project');
     const [uploading, setUploading] = useState(false);
     const [r2Files, setR2Files] = useState([]);
