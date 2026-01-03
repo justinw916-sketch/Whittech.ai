@@ -163,6 +163,15 @@ export default {
 
         // API Routes
 
+        // Public: Auth
+        if (url.pathname.startsWith('/api/auth')) {
+            // Rate Limit: 30 req/min for auth to prevent brute force
+            if (!(await checkRateLimit(request, env, 30, 60))) {
+                return new Response(JSON.stringify({ error: 'Too many requests' }), { status: 429, headers: corsHeaders });
+            }
+            return handleAuthRequest(request, env, url, corsHeaders);
+        }
+
         // Public: Chat
         if (url.pathname === '/api/chat') {
             // Rate Limit: 10 req/min
