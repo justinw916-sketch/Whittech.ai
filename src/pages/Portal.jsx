@@ -100,11 +100,11 @@ async function deleteUserRequest(userId) {
     return res.json();
 }
 
-async function loginUser(username, password) {
+async function loginUser(username, password, cfToken) {
     const res = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }, // Public endpoint
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username, password, cfToken })
     });
     return res.json();
 }
