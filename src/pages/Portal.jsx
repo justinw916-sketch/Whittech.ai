@@ -334,8 +334,9 @@ function AdminPortal({ currentUser, onLogout }) {
                     startDate: user.clientData?.startDate || user.project?.startDate,
                     estimatedCompletion: user.clientData?.estimatedCompletion || user.project?.estimatedCompletion,
                     contactPerson: user.clientData?.contactPerson || user.project?.contactPerson,
-                    contactEmail: user.clientData?.customerEmail || user.clientData?.contactEmail || user.email || user.project?.contactEmail,
-                    contactPhone: user.clientData?.customerPhone || user.clientData?.contactPhone || user.phone || user.project?.contactPhone,
+                    // Check project.customerEmail first (for edited data), then fallbacks
+                    contactEmail: user.project?.customerEmail || user.clientData?.customerEmail || user.clientData?.contactEmail || user.email || user.project?.contactEmail,
+                    contactPhone: user.project?.customerPhone || user.clientData?.customerPhone || user.clientData?.contactPhone || user.phone || user.project?.contactPhone,
                 }),
             });
 
@@ -411,7 +412,8 @@ function AdminPortal({ currentUser, onLogout }) {
 
             const updatePayload = {
                 userId: updatedUser.id,
-                clientData: updatedUser.clientData || updatedUser.project // Assuming project data is stored in clientData
+                // PRIORITIZE updatedUser.project because that's what EditClientModal edits
+                clientData: updatedUser.project || updatedUser.clientData
             };
 
             // We might need to update username if changed, but usually that's fixed.
@@ -545,7 +547,7 @@ function AdminPortal({ currentUser, onLogout }) {
 
             {/* Edit Modal */}
             <AnimatePresence>
-                {editingUser && <EditClientModal user={editingUser} onSave={saveUserEdit} onClose={() => setEditingUser(null)} onResendEmail={() => sendWelcomeEmail(editingUser)} />}
+                {editingUser && <EditClientModal user={editingUser} onSave={saveUserEdit} onClose={() => setEditingUser(null)} onResendEmail={(u) => sendWelcomeEmail(u || editingUser)} />}
                 {viewingUser && <ViewClientModal user={viewingUser} onClose={() => setViewingUser(null)} />}
                 {showAdminSettings && (
                     <AdminSettingsModal
@@ -994,7 +996,7 @@ function EditClientModal({ user, onSave, onClose, onResendEmail }) {
 
                 {/* Footer */}
                 <div style={{ padding: '16px 24px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <button onClick={() => { if (confirm('Resend intro email?')) onResendEmail(); }} style={{ padding: '10px 20px', background: 'rgba(0, 212, 255, 0.1)', border: '1px solid rgba(0, 212, 255, 0.3)', borderRadius: '8px', color: '#00d4ff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
+                    <button onClick={() => { if (confirm('Resend intro email?')) onResendEmail(editedUser); }} style={{ padding: '10px 20px', background: 'rgba(0, 212, 255, 0.1)', border: '1px solid rgba(0, 212, 255, 0.3)', borderRadius: '8px', color: '#00d4ff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
                         <Mail size={16} /> Resend Intro Email
                     </button>
                     <div style={{ display: 'flex', gap: '12px' }}>
