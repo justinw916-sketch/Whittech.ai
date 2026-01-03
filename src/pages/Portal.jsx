@@ -330,8 +330,8 @@ function AdminPortal({ currentUser, onLogout }) {
                     startDate: user.clientData?.startDate || user.project?.startDate,
                     estimatedCompletion: user.clientData?.estimatedCompletion || user.project?.estimatedCompletion,
                     contactPerson: user.clientData?.contactPerson || user.project?.contactPerson,
-                    contactEmail: user.email || user.project?.contactEmail,
-                    contactPhone: user.phone || user.project?.contactPhone,
+                    contactEmail: user.clientData?.contactEmail || user.email || user.project?.contactEmail,
+                    contactPhone: user.clientData?.contactPhone || user.phone || user.project?.contactPhone,
                 }),
             });
 
