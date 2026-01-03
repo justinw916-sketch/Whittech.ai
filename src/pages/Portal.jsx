@@ -319,9 +319,7 @@ function AdminPortal({ currentUser, onLogout }) {
         try {
             const response = await fetch('/api/email/welcome', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: getAuthHeaders(), // Use auth headers (includes Content-Type and Authorization)
                 body: JSON.stringify({
                     username: user.username,
                     password: password, // Pass specific password if available (e.g., new registration)
