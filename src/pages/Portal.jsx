@@ -127,7 +127,12 @@ const getDefaultProject = () => ({
     estimatedCompletion: "",
     contactPerson: "",
     contactEmail: "",
+    contactPerson: "",
+    contactEmail: "",
     contactPhone: "",
+    customerName: "",
+    customerEmail: "",
+    customerPhone: "",
     phases: [
         { name: "Planning", status: "active", date: "In Progress" },
         { name: "Design", status: "pending", date: "Pending" },
@@ -328,8 +333,8 @@ function AdminPortal({ currentUser, onLogout }) {
                     startDate: user.clientData?.startDate || user.project?.startDate,
                     estimatedCompletion: user.clientData?.estimatedCompletion || user.project?.estimatedCompletion,
                     contactPerson: user.clientData?.contactPerson || user.project?.contactPerson,
-                    contactEmail: user.clientData?.contactEmail || user.email || user.project?.contactEmail,
-                    contactPhone: user.clientData?.contactPhone || user.phone || user.project?.contactPhone,
+                    contactEmail: user.clientData?.customerEmail || user.clientData?.contactEmail || user.email || user.project?.contactEmail,
+                    contactPhone: user.clientData?.customerPhone || user.clientData?.contactPhone || user.phone || user.project?.contactPhone,
                 }),
             });
 
@@ -493,6 +498,10 @@ function AdminPortal({ currentUser, onLogout }) {
                                 <InputField label="Contact Person" value={newUser.project.contactPerson} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, contactPerson: v } })} />
                                 <InputField label="Contact Email" value={newUser.project.contactEmail} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, contactEmail: v } })} />
                                 <InputField label="Contact Phone" value={newUser.project.contactPhone} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, contactPhone: v } })} />
+                                {/* New Customer Fields */}
+                                <InputField label="Customer Name" value={newUser.project.customerName} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, customerName: v } })} />
+                                <InputField label="Customer Email" value={newUser.project.customerEmail} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, customerEmail: v } })} />
+                                <InputField label="Customer Phone" value={newUser.project.customerPhone} onChange={v => setNewUser({ ...newUser, project: { ...newUser.project, customerPhone: v } })} />
                             </div>
                             <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
                                 <button onClick={addUser} style={{ padding: '10px 24px', background: '#10b981', border: 'none', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: '600' }}>Create Account</button>
@@ -860,6 +869,13 @@ function EditClientModal({ user, onSave, onClose, onResendEmail }) {
                             <InputField label="Contact Person" value={editedUser.project.contactPerson} onChange={v => updateProject('contactPerson', v)} />
                             <InputField label="Contact Email" value={editedUser.project.contactEmail} onChange={v => updateProject('contactEmail', v)} />
                             <InputField label="Contact Phone" value={editedUser.project.contactPhone} onChange={v => updateProject('contactPhone', v)} />
+
+                            <div style={{ gridColumn: '1 / -1', height: '1px', background: 'rgba(255,255,255,0.1)', margin: '10px 0' }}></div>
+                            <h4 style={{ gridColumn: '1 / -1', color: '#a855f7', fontSize: '14px', marginBottom: '-8px' }}>Customer Details</h4>
+
+                            <InputField label="Customer Name" value={editedUser.project.customerName} onChange={v => updateProject('customerName', v)} />
+                            <InputField label="Customer Email" value={editedUser.project.customerEmail} onChange={v => updateProject('customerEmail', v)} />
+                            <InputField label="Customer Phone" value={editedUser.project.customerPhone} onChange={v => updateProject('customerPhone', v)} />
                         </div>
                     )}
 
