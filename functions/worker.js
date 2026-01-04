@@ -435,7 +435,7 @@ async function handleWelcomeEmail(request, env, corsHeaders) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    from: 'WhitTech.AI <onboarding@resend.dev>',
+                    from: 'WhitTech.AI <noreply@whittech.ai>',
                     to: [contactEmail],
                     subject: `Welcome to WhitTech.AI - Your Portal Access for ${projectName}`,
                     html: emailHtml,
