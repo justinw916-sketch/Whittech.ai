@@ -335,8 +335,9 @@ function AdminPortal({ currentUser, onLogout }) {
                     startDate: user.clientData?.startDate || user.project?.startDate,
                     estimatedCompletion: user.clientData?.estimatedCompletion || user.project?.estimatedCompletion,
                     contactPerson: user.clientData?.contactPerson || user.project?.contactPerson,
-                    // Check project.customerEmail first (for edited data), then fallbacks
-                    contactEmail: user.project?.customerEmail || user.clientData?.customerEmail || user.clientData?.contactEmail || user.email || user.project?.contactEmail,
+                    // Send to Customer Email ONLY (as per user request). 
+                    // contactEmail is for internal employee assignment.
+                    contactEmail: user.project?.customerEmail || user.clientData?.customerEmail,
                     contactPhone: user.project?.customerPhone || user.clientData?.customerPhone || user.clientData?.contactPhone || user.phone || user.project?.contactPhone,
                 }),
             });
@@ -376,8 +377,9 @@ function AdminPortal({ currentUser, onLogout }) {
             });
 
             if (result.success) {
-                // Send welcome email if contact email is provided
-                if (newUser.project?.contactEmail) {
+                // Send welcome email ONLY if customer email is provided
+                const targetEmail = newUser.project?.customerEmail;
+                if (targetEmail) {
                     await sendWelcomeEmail(newUser, newUser.password);
                 }
 
